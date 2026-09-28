@@ -1,6 +1,6 @@
 ---
 name: create-penpot-prototype
-description: Creates a Penpot prototype for a XaviUI component or screen, using the project's design tokens (palette/typography) as visual reference.
+description: Creates a Penpot prototype for a UI Kit component or screen, using the project's design tokens (palette/typography) as visual reference.
 ---
 
 # Create Penpot Prototype
@@ -8,7 +8,7 @@ description: Creates a Penpot prototype for a XaviUI component or screen, using 
 ## Purpose
 
 Generate a Penpot prototype that serves as a visual reference for a
-component, screen template, or flow in XaviUI, before (or after) its
+component, screen template, or flow in UI Kit, before (or after) its
 implementation in Godot.
 
 ## When to use
@@ -45,8 +45,8 @@ implementation in Godot.
 ## Notes
 
 - Do not invent color/typography tokens that don't exist in the project —
-  use the ones already defined in `XaviPalette`/`XaviTypography` (see
-  resources in `addons/xavi_ui/`).
+  use the ones already defined in `UIPalette`/`UITypography` (see
+  resources in `addons/ui_kit/`).
 - Keep the prototype simple: one board per component/screen, without
   interaction details that Penpot doesn't represent well (that's left for
   the implementation in Godot).

@@ -6,7 +6,7 @@ rather than by file type:
 ```
 res://
 ├── addons/
-│   └── xavi_ui/           # addon source code (plugin.cfg, plugin.gd, internal classes,
+│   └── ui_kit/           # addon source code (plugin.cfg, plugin.gd, internal classes,
 │                          # bundled fonts, theme/component/template resources)
 ├── demo/                  # example/manual test scenes for the addon
 ├── tests/                 # automated tests
@@ -25,8 +25,8 @@ Rules:
 - Resources shared across multiple demo scenes (sprites, audio) go in
   `assets/`, never inside a specific feature's folder.
 - Addon code — including bundled fonts, theme resources, and component/
-  template scenes — lives exclusively in `addons/xavi_ui/` — no addon logic
+  template scenes — lives exclusively in `addons/ui_kit/` — no addon logic
   or assets outside that folder. This is what a consumer project copies in
-  to install XaviUI.
+  to install UI Kit.
 - Don't create empty folders "for the future". A folder only exists once it
   has content.

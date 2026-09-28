@@ -1,38 +1,38 @@
 # Roadmap
 
-Plan for building XaviUI: a UI kit for Godot you can drop into any new
+Plan for building UI Kit: a UI kit for Godot you can drop into any new
 project. It gives you themed components, ready-made menu screens, and
 automatic keyboard/gamepad/touch switching, so you don't rebuild your UI
 from zero every time.
 
 ## How It Works
 
-XaviUI leans on what Godot already does and only fills the gaps.
+UI Kit leans on what Godot already does and only fills the gaps.
 
 **Theming from tokens.** Godot has Theme Type Variations (named styles like
 `PrimaryButton` on top of `Button`), but they can't share a color. To change
 your accent color you edit the same hex in every `StyleBoxFlat`, one by one.
-So: `XaviPalette` + `XaviTypography` hold the colors and fonts once, and a
+So: `UIPalette` + `UITypography` hold the colors and fonts once, and a
 builder writes them into the Type Variations. Re-skinning the game becomes a
 few field edits in one resource.
 
 **Input-device detection.** Godot has no idea which device the player is
 using right now. The common trick, `Input.get_connected_joypads().size() > 0`,
-is wrong as soon as a gamepad is plugged in but not used. So: the `XaviInput`
+is wrong as soon as a gamepad is plugged in but not used. So: the `UIInput`
 autoload watches real `_input(event)` events, remembers the *last* device
 used, and emits `device_changed(device)` only when it actually changes.
 
 **Components with no scripts.** A native `Button`/`CheckBox`/`Slider`/`Panel`
 with a Type Variation already handles hover, pressed, disabled, and focus by
 itself. So most of the kit is just styles. Only two things need code:
-`XaviFocusPrompt`, one overlay that draws the right button glyph over
-whatever has focus, and `XaviButton`, for the little that styling can't do.
+`UIFocusPrompt`, one overlay that draws the right button glyph over
+whatever has focus, and `UIButton`, for the little that styling can't do.
 
 **Named breakpoints.** Godot's stretch modes scale a layout but never
 rearrange it — a row of buttons that fits a Steam window overflows on a
 phone in portrait. Godot *does* have containers that rearrange
 (`FlowContainer` wraps, `BoxContainer.vertical` toggles at runtime), it just
-has no idea what size class the screen is. So: `XaviBreakpoints` reports
+has no idea what size class the screen is. So: `UIBreakpoints` reports
 `mobile_portrait` / `mobile_landscape` / `desktop` and nothing more. The
 native containers do the rearranging.
 
@@ -45,7 +45,7 @@ layout for free.
 
 **One-click install.** Normally a consumer has to open
 `Project Settings > Autoload` and type each singleton path by hand — get it
-wrong and the autoload silently doesn't exist. So XaviUI ships as a real
+wrong and the autoload silently doesn't exist. So UI Kit ships as a real
 `EditorPlugin`: `plugin.gd` calls `add_autoload_singleton()` in
 `_enter_tree()` and `remove_autoload_singleton()` in `_exit_tree()`.
 Installing is ticking a checkbox.
@@ -74,19 +74,19 @@ Installing is ticking a checkbox.
 ## Phases
 
 ### Phase 0 — Baseline
-- [ ] Write down the public API you want (`XaviPalette`, `XaviButton`,
-      `XaviInput.get_active_device()`, template names) before writing any
+- [ ] Write down the public API you want (`UIPalette`, `UIButton`,
+      `UIInput.get_active_device()`, template names) before writing any
       internals.
-- [ ] `addons/xavi_ui/plugin.cfg` + an empty `plugin.gd`.
+- [ ] `addons/ui_kit/plugin.cfg` + an empty `plugin.gd`.
 - [ ] **Done when:** the API notes exist (this file + `api_design.md`) and
       the addon shows up under `Project Settings > Plugins`.
 
 ### Phase 1 — Tokens & theme generation
-- [ ] `XaviPalette`: colors with names by role (background, surface, text
+- [ ] `UIPalette`: colors with names by role (background, surface, text
       primary/secondary, accent, info/warning/error/critical).
-- [ ] `XaviTypography`: bundled fonts + sizes (heading, body, button label,
+- [ ] `UITypography`: bundled fonts + sizes (heading, body, button label,
       caption).
-- [ ] A builder that writes a `XaviPalette` + `XaviTypography` pair into a
+- [ ] A builder that writes a `UIPalette` + `UITypography` pair into a
       `Theme`'s Type Variations.
 - [ ] **Done when:** `demo/theming/` holds a plain `Button` and `Panel` with
       no scripts, and swapping the palette in the inspector re-skins both
@@ -96,7 +96,7 @@ Installing is ticking a checkbox.
 - [ ] First do it the naive way by hand (guess from
       `Input.get_connected_joypads().size()`) so you see the problem
       yourself.
-- [ ] `XaviInput` autoload: `get_active_device() -> InputDevice` and a
+- [ ] `UIInput` autoload: `get_active_device() -> InputDevice` and a
       `device_changed(device: InputDevice)` signal.
 - [ ] Register it from `plugin.gd`.
 - [ ] **Done when:** `demo/input_switching/` shows a label that updates the
@@ -106,10 +106,10 @@ Installing is ticking a checkbox.
 ### Phase 3 — Component kit
 - [ ] Type Variations for `Button` (primary/secondary/icon), `CheckBox`,
       `HSlider`/`VSlider`, `Panel`. Native nodes, no subclasses.
-- [ ] `XaviFocusPrompt`: one overlay that reads
-      `XaviInput.device_changed` + `gui_get_focus_owner()` and draws the
+- [ ] `UIFocusPrompt`: one overlay that reads
+      `UIInput.device_changed` + `gui_get_focus_owner()` and draws the
       right glyph. Covers every component in one place.
-- [ ] `XaviButton`: the only real component script, for what styling can't
+- [ ] `UIButton`: the only real component script, for what styling can't
       do (like a per-variant icon).
 - [ ] **Done when:** `demo/components/` shows the whole kit and is fully
       navigable by keyboard, gamepad, and touch.
@@ -117,9 +117,9 @@ Installing is ticking a checkbox.
 ### Phase 4 — Responsive breakpoints
 - [ ] First break it by hand: a fixed layout that overflows in mobile
       portrait.
-- [ ] `XaviBreakpoints` autoload: `get_active_breakpoint() -> StringName`
+- [ ] `UIBreakpoints` autoload: `get_active_breakpoint() -> StringName`
       and a `breakpoint_changed(breakpoint: StringName)` signal.
-- [ ] Register it from `plugin.gd` next to `XaviInput`.
+- [ ] Register it from `plugin.gd` next to `UIInput`.
 - [ ] Let scenes react with native containers only — `FlowContainer` to
       wrap, `BoxContainer.vertical` toggled. No custom `Container`.
 - [ ] **Done when:** `demo/responsive/` works in mobile portrait, mobile
@@ -146,9 +146,9 @@ Installing is ticking a checkbox.
 - [ ] Export and check by hand on web, one mobile target, and
       Windows/Steam. Input switching and breakpoints must work on all
       three.
-- [ ] A few tests in `tests/` for `XaviInput` edge cases (gamepad unplugged
+- [ ] A few tests in `tests/` for `UIInput` edge cases (gamepad unplugged
       mid-game, two gamepads).
-- [ ] Install on a clean project: copy `addons/xavi_ui/`, enable the plugin,
+- [ ] Install on a clean project: copy `addons/ui_kit/`, enable the plugin,
       confirm both autoloads appear with no manual setup.
 - [ ] **Done when:** the addon works standalone on all three targets above.
 
@@ -157,18 +157,18 @@ Installing is ticking a checkbox.
 1. Why build the `Theme` from a token resource instead of editing theme
    overrides in the inspector? What breaks when you re-skin a whole game?
 2. What's wrong with `Input.get_connected_joypads().size() > 0`, and what
-   does `XaviInput` track instead?
+   does `UIInput` track instead?
 3. If a gamepad is plugged in but the player is typing, what should
    `get_active_device()` return, and why?
 4. Why do most components need no script? What does a Type Variation
-   already handle, and what's left for `XaviFocusPrompt`/`XaviButton`?
+   already handle, and what's left for `UIFocusPrompt`/`UIButton`?
 5. Why one shared focus prompt instead of `device_changed` logic in every
    component?
-6. Why does `XaviBreakpoints` only report the active breakpoint and never
+6. Why does `UIBreakpoints` only report the active breakpoint and never
    rearrange anything?
 7. Why ship the menu templates in the addon instead of letting each project
    wire its own navigation?
-8. Why bundle fonts inside `addons/xavi_ui/`, and why does that matter most
+8. Why bundle fonts inside `addons/ui_kit/`, and why does that matter most
    for the web export?
 9. Why register the autoloads from `plugin.gd` instead of documenting
    "add these by hand"? What fails silently if the path is mistyped?
@@ -179,7 +179,7 @@ Installing is ticking a checkbox.
   approach from memory.
 - Component kit, responsive layout, input switching, and all three
   templates are finished.
-- A brand-new project can copy `addons/xavi_ui/`, enable the plugin, drop in
+- A brand-new project can copy `addons/ui_kit/`, enable the plugin, drop in
   the templates, and ship a themed menu flow that works with keyboard,
   gamepad, and touch — no new UI code, no manual autoloads.
 - Verified on web, one mobile export, and Windows/Steam.

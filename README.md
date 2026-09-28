@@ -1,4 +1,4 @@
-# XaviUI
+# UI Kit
 
 A portable UI kit for the Godot Engine: themed components, ready-made menu
 templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
@@ -9,15 +9,15 @@ without rebuilding UI from scratch every time.
 > full phased plan and [api_design.md](docs/api_design.md) for the sketched
 > public API. Nothing is implemented yet.
 
-## Why XaviUI
+## Why UI Kit
 
 Godot's built-in `Control`/`Theme` system covers the primitives well, but
 every new project ends up rebuilding the same things from scratch:
 
-- **Design-token theming** — a `XaviPalette`/`XaviTypography` resource pair
+- **Design-token theming** — a `UIPalette`/`UITypography` resource pair
   generates a full `Theme`, instead of editing dozens of overrides by hand
   per project.
-- **Automatic input-device switching** — `XaviInput` tracks whether the
+- **Automatic input-device switching** — `UIInput` tracks whether the
   player is currently on keyboard/mouse, gamepad, or touch from real input
   events, and the component kit reacts to it automatically.
 - **Ready-made, fully-navigable menu templates** — main menu, pause menu,

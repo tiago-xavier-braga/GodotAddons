@@ -1,6 +1,6 @@
 # Design Palette
 
-XaviUI's default token set — usable as-is via a `XaviPalette` resource (see
+UI Kit's default token set — usable as-is via a `UIPalette` resource (see
 [`api_design.md`](api_design.md), Phase 1), or replaced wholesale for a
 project's own palette without touching any component code. A 10-step ramp
 moving from cool, dark tones into warm, hot ones; useful for a sequential
@@ -31,19 +31,19 @@ scale (severity, intensity, progress) as well as general UI theming.
   `oxidized-iron`, `brown-red`: accents, calls to action, and a
   severity scale (info → warning → error → critical) in that order.
 
-## Mapping to `XaviPalette`
+## Mapping to `UIPalette`
 
-| `XaviPalette` field | Color             |
-| -------------------- | ----------------- |
-| `background`          | `ink-black`       |
-| `surface`              | `dark-teal`       |
-| `text_primary`         | `vanilla-custard` |
-| `text_secondary`       | `pearl-aqua`      |
-| `accent`               | `golden-orange`   |
-| `info`                 | `dark-cyan`       |
-| `warning`              | `burnt-caramel`   |
-| `error`                | `rusty-spice`     |
-| `critical`             | `brown-red`       |
+| `UIPalette` field | Color             |
+| ----------------- | ----------------- |
+| `background`      | `ink-black`       |
+| `surface`         | `dark-teal`       |
+| `text_primary`    | `vanilla-custard` |
+| `text_secondary`  | `pearl-aqua`      |
+| `accent`          | `golden-orange`   |
+| `info`            | `dark-cyan`       |
+| `warning`         | `burnt-caramel`   |
+| `error`           | `rusty-spice`     |
+| `critical`        | `brown-red`       |
 
 ## Accessibility notes
 
@@ -54,5 +54,5 @@ scale (severity, intensity, progress) as well as general UI theming.
   comfortably.
 - Verify any final text/background pairing against WCAG AA (4.5:1 for body
   text, 3:1 for large text) before shipping — this matters more here than
-  in a single-project palette, since every consumer of XaviUI inherits
+  in a single-project palette, since every consumer of UI Kit inherits
   whatever the default gets wrong.

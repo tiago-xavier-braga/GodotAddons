@@ -1,17 +1,17 @@
 # API Design — Phase 0 Baseline
 
-Sketch of XaviUI's public API surface, written before any addon internals
+Sketch of UI Kit's public API surface, written before any addon internals
 (see [`roadmap.md`](roadmap.md), Phase 0). Names follow GDScript conventions
 (`snake_case` for members, `PascalCase` for classes) and the architecture
 decisions the roadmap has already made (token-driven `Theme` generation, an
-`XaviInput` autoload, breakpoint-based responsive layout).
+`UIInput` autoload, breakpoint-based responsive layout).
 
 This is notes, not code — nothing here needs to compile yet.
 
 ## 1. Design tokens & Theme generation (Phase 1)
 
 ```gdscript
-class_name XaviPalette
+class_name UIPalette
 extends Resource
 
 @export var background: Color
@@ -26,7 +26,7 @@ extends Resource
 ```
 
 ```gdscript
-class_name XaviTypography
+class_name UITypography
 extends Resource
 
 @export var font_default: Font
@@ -37,18 +37,18 @@ extends Resource
 ```
 
 ```gdscript
-XaviThemeBuilder.apply(theme: Theme, palette: XaviPalette, typography: XaviTypography) -> void
+UIThemeBuilder.apply(theme: Theme, palette: UIPalette, typography: UITypography) -> void
 ```
 
 - `apply()` writes into the `Theme`'s existing Theme Type Variations
-  (`PrimaryButton`, `SecondaryButton`, `XaviPanel`, ...) instead of
+  (`PrimaryButton`, `SecondaryButton`, `UIPanel`, ...) instead of
   generating a new `Theme` from scratch — the variations themselves are
   still defined in the editor (the native Theme editor), only the values
   come from the token.
 - Semantic roles (`background`, `accent`, `error`, ...) rather than raw
   color slots, so a component only ever asks for "the accent color", never
   a hardcoded hex.
-- Default values ship as a `XaviPalette`/`XaviTypography` pair matching
+- Default values ship as a `UIPalette`/`UITypography` pair matching
   [`design.md`](design.md), usable as-is or replaced wholesale per
   project.
 
@@ -57,8 +57,8 @@ XaviThemeBuilder.apply(theme: Theme, palette: XaviPalette, typography: XaviTypog
 ```gdscript
 enum InputDevice { KEYBOARD_MOUSE, GAMEPAD, TOUCH }
 
-XaviInput.get_active_device() -> InputDevice
-signal XaviInput.device_changed(device: InputDevice)
+UIInput.get_active_device() -> InputDevice
+signal UIInput.device_changed(device: InputDevice)
 ```
 
 - Autoload singleton; listens in `_input(event)` and classifies `event` by
@@ -72,11 +72,11 @@ signal XaviInput.device_changed(device: InputDevice)
 ## 3. Themed components (Phase 3)
 
 ```gdscript
-class_name XaviFocusPrompt
+class_name UIFocusPrompt
 extends CanvasLayer
 
 func _ready() -> void:
-	XaviInput.device_changed.connect(_on_device_changed)
+	UIInput.device_changed.connect(_on_device_changed)
 	get_viewport().gui_focus_changed.connect(_on_focus_changed)
 ```
 
@@ -84,13 +84,13 @@ func _ready() -> void:
   Variation applied to the native node (`CheckBox`, `HSlider`/`VSlider`,
   `Panel`) — per-state `StyleBox` already covers
   hover/pressed/disabled/focus.
-- `XaviFocusPrompt` is the one place that reacts to
-  `XaviInput.device_changed`, using `Viewport.gui_focus_changed` (native)
+- `UIFocusPrompt` is the one place that reacts to
+  `UIInput.device_changed`, using `Viewport.gui_focus_changed` (native)
   to know who currently has focus and draw the right glyph over it — not
   a script per component.
 
 ```gdscript
-class_name XaviButton
+class_name UIButton
 extends Button
 
 @export var variant: Variant  # PRIMARY / SECONDARY / ICON — enum TBD
@@ -106,11 +106,11 @@ extends Button
 ```gdscript
 enum Breakpoint { MOBILE_PORTRAIT, MOBILE_LANDSCAPE, DESKTOP }
 
-XaviBreakpoints.get_active_breakpoint() -> StringName
-signal XaviBreakpoints.breakpoint_changed(breakpoint: StringName)
+UIBreakpoints.get_active_breakpoint() -> StringName
+signal UIBreakpoints.breakpoint_changed(breakpoint: StringName)
 ```
 
-- Autoload singleton, same shape as `XaviInput`: reads the viewport size
+- Autoload singleton, same shape as `UIInput`: reads the viewport size
   on `_notification(NOTIFICATION_RESIZED)`, picks the matching named
   breakpoint, and emits the signal only on an actual change.
 - Doesn't restructure anything itself — each scene decides what to do
@@ -122,14 +122,14 @@ signal XaviBreakpoints.breakpoint_changed(breakpoint: StringName)
 ## 5. Full-screen templates (Phase 5)
 
 ```gdscript
-addons/xavi_ui/templates/main_menu/main_menu.tscn
-addons/xavi_ui/templates/pause_menu/pause_menu.tscn
-addons/xavi_ui/templates/settings_menu/settings_menu.tscn
+addons/ui_kit/templates/main_menu/main_menu.tscn
+addons/ui_kit/templates/pause_menu/pause_menu.tscn
+addons/ui_kit/templates/settings_menu/settings_menu.tscn
 ```
 
 - Plain scenes, not scripts with a public API — "usage" is instancing
-  them and connecting their signals (`XaviPauseMenu.resume_pressed`,
-  `XaviSettingsMenu.palette_changed(palette: XaviPalette)`, ...).
+  them and connecting their signals (`UIPauseMenu.resume_pressed`,
+  `UISettingsMenu.palette_changed(palette: UIPalette)`, ...).
 - Built entirely from Phase 3 components + Phase 4 layout, so they
   inherit theming and input switching for free instead of reimplementing
   either.
@@ -142,11 +142,11 @@ addons/xavi_ui/templates/settings_menu/settings_menu.tscn
 ## Open questions to settle before Phase 1
 
 - Exact thresholds (in px) for each `Breakpoint` — probably `@export` on
-  the `XaviBreakpoints` autoload, not hardcoded, so a project can adjust
+  the `UIBreakpoints` autoload, not hardcoded, so a project can adjust
   without editing the addon.
 - Deadzone threshold for `InputEventJoypadMotion` before it counts as
   "gamepad input" for device-switching purposes.
-- Whether `XaviButton` variants (`PRIMARY`/`SECONDARY`/`ICON`) are one
+- Whether `UIButton` variants (`PRIMARY`/`SECONDARY`/`ICON`) are one
   script with an `@export` enum, or one base class with a subclass per
   variant — the same choice applies to every other themed component.
 - How a component decides which prompt glyph set to show per gamepad

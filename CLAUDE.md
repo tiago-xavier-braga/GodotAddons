@@ -1,4 +1,4 @@
-# XaviUI
+# UI Kit
 
 This is a UI addon for the Godot Engine: a portable kit of themed
 components, ready-made menu templates, and automatic keyboard/gamepad/touch

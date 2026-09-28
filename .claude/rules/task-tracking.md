@@ -5,7 +5,7 @@ tell the user to move on to a new step, include a short task/card name they
 can use to create a tracking card (e.g. Trello, GitHub Projects) for that
 step.
 
-- Format: `XaviUI Phase <N> — <short step summary>` (e.g. `XaviUI
+- Format: `UI Kit Phase <N> — <short step summary>` (e.g. `UI Kit
   Phase 1 — Palette resource + Theme builder`).
 - One card name per step, not per phase — a phase spans several guided
   steps, and each step is its own trackable unit of work.
