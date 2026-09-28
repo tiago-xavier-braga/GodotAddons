@@ -1,6 +1,6 @@
 ---
 name: create-penpot-prototype
-description: Creates a Penpot prototype for a UI Kit component or screen, using the project's design tokens (palette/typography) as visual reference.
+description: Creates a Penpot prototype for a component or screen of the ui_kit addon, using its design tokens (palette/typography) as visual reference.
 ---
 
 # Create Penpot Prototype
@@ -8,8 +8,8 @@ description: Creates a Penpot prototype for a UI Kit component or screen, using 
 ## Purpose
 
 Generate a Penpot prototype that serves as a visual reference for a
-component, screen template, or flow in UI Kit, before (or after) its
-implementation in Godot.
+component, screen template, or flow in the `ui_kit` addon, before (or after)
+its implementation in Godot.
 
 ## When to use
 
@@ -41,12 +41,23 @@ implementation in Godot.
 - Buttons must be represented with background and text grouped into a
   single Penpot component — do not create the text and background as
   loose elements; the same applies if there are icons.
+- Use Penpot's layout system (Flex/Grid) for every board that groups more
+  than one element — never position children with fixed/absolute x/y.
+  This is what makes the prototype responsive:
+  - Containers whose content defines their size (buttons, panels, groups)
+    get `horizontalSizing`/`verticalSizing` set to `auto`.
+  - Containers that should adapt to the screen (columns, sections spanning
+    the width/height) get `fill` instead.
+  - Use gaps (`rowGap`/`columnGap`) and padding for spacing — never
+    hardcoded margins between siblings.
+  - Reach for Grid layout when content is arranged in rows/columns with
+    alignment across both axes (e.g. a settings form, an inventory grid).
 
 ## Notes
 
-- Do not invent color/typography tokens that don't exist in the project —
-  use the ones already defined in `UIPalette`/`UITypography` (see
-  resources in `addons/ui_kit/`).
+- Do not invent color/typography tokens that don't exist in the addon —
+  use the ones already defined in `UIPalette`/`UITypography` (resources in
+  `addons/ui_kit/`, documented in `docs/ui_kit/design.md`).
 - Keep the prototype simple: one board per component/screen, without
   interaction details that Penpot doesn't represent well (that's left for
   the implementation in Godot).

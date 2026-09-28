@@ -1,48 +1,70 @@
-# UI Kit
+# Godot Addons
 
-A portable UI kit for the Godot Engine: themed components, ready-made menu
-templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
-input switching — built to drop into new projects (web, mobile, Steam)
-without rebuilding UI from scratch every time.
+Internal monorepo of reusable addons for the Godot Engine. One Godot project
+holds every addon plus its demo and test scenes, so they get developed and
+tested together instead of one project per addon.
 
-> **Status:** planning (Phase 0) — see [roadmap.md](docs/roadmap.md) for the
-> full phased plan and [api_design.md](docs/api_design.md) for the sketched
-> public API. Nothing is implemented yet.
+The project at the root (`project.godot`, `demo/`, `tests/`) is a development
+harness — it is never distributed. Each `addons/<name>/` folder is the
+deliverable, self-contained and copyable on its own.
 
-## Why UI Kit
+## Addons
 
-Godot's built-in `Control`/`Theme` system covers the primitives well, but
-every new project ends up rebuilding the same things from scratch:
-
-- **Design-token theming** — a `UIPalette`/`UITypography` resource pair
-  generates a full `Theme`, instead of editing dozens of overrides by hand
-  per project.
-- **Automatic input-device switching** — `UIInput` tracks whether the
-  player is currently on keyboard/mouse, gamepad, or touch from real input
-  events, and the component kit reacts to it automatically.
-- **Ready-made, fully-navigable menu templates** — main menu, pause menu,
-  and settings menu, pre-wired for keyboard, gamepad, and touch navigation
-  at once.
-- **Responsive layout** — a breakpoint container restructures UI (not just
-  scales it) across mobile, desktop, and Steam window sizes.
-
-See [roadmap.md](docs/roadmap.md) for the full plan and the architecture
-decisions behind it, and [design.md](docs/design.md) for the default token
-palette.
+| Addon | What it does | Status |
+| ----- | ------------ | ------ |
+| [`ui_kit`](addons/ui_kit/) | Themed UI components, ready-made menu templates, and automatic keyboard/gamepad/touch switching | Planning ([roadmap](docs/ui_kit/roadmap.md)) |
 
 ## Requirements
 
 - Godot `4.7`
 
-## Installation
+## Layout
 
-Not available yet — the addon has no code until Phase 1 of the
-[roadmap](docs/roadmap.md) lands.
+```
+addons/<name>/        # the addon itself — the only thing consumers copy
+demo/<name>/          # manual demo scenes for that addon
+docs/<name>/          # planning notes, API sketches, design decisions
+tests/<name>/         # automated tests
+project.godot         # dev harness, never distributed
+```
 
-## Changelog
+## Working on an addon
 
-See [CHANGELOG.md](CHANGELOG.md) for release history.
+Open the repo as a Godot project and enable the addons you need under
+`Project Settings > Plugins`. Each addon has its own `plugin.cfg`, so you can
+enable one at a time — useful to confirm an addon still works without the
+others loaded.
+
+### Two rules that matter across addons
+
+**One name prefix per addon.** GDScript has no namespaces: `class_name` and
+autoload names are global to the whole project, including the consumer's game.
+Two addons declaring the same `class_name` will not compile together. `ui_kit`
+owns the `UI` prefix (`UIPalette`, `UIInput`, ...); every new addon picks its
+own and keeps to it.
+
+**Keep addons self-contained.** Everything loads at once here, so it is easy
+to reach across addons without noticing — and the consumer who copies only one
+folder then breaks at runtime. If an addon genuinely needs another, say so in
+its README and check for it in `_enter_tree()` instead of assuming.
+
+## Using an addon in a project
+
+**Copy the folder.** Copy `addons/<name>/` into the target project and enable
+it under `Project Settings > Plugins`. The version ends up committed in the
+game's repo, which is usually what you want. Re-copy to update.
+
+**Submodule, if re-copying gets old.** A git submodule cannot check out a
+subdirectory, so this needs a per-addon repo. Publish one as a read-only
+mirror without splitting development:
+
+```bash
+git subtree split --prefix=addons/ui_kit -b dist/ui_kit
+git push git@github.com:<user>/godot-ui-kit.git dist/ui_kit:main
+```
+
+The consuming project submodules the mirror. One command per release.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — applies to every addon in this repo.

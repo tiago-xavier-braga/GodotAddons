@@ -88,7 +88,7 @@ Installing is ticking a checkbox.
       caption).
 - [ ] A builder that writes a `UIPalette` + `UITypography` pair into a
       `Theme`'s Type Variations.
-- [ ] **Done when:** `demo/theming/` holds a plain `Button` and `Panel` with
+- [ ] **Done when:** `demo/ui_kit/theming/` holds a plain `Button` and `Panel` with
       no scripts, and swapping the palette in the inspector re-skins both
       live.
 
@@ -99,7 +99,7 @@ Installing is ticking a checkbox.
 - [ ] `UIInput` autoload: `get_active_device() -> InputDevice` and a
       `device_changed(device: InputDevice)` signal.
 - [ ] Register it from `plugin.gd`.
-- [ ] **Done when:** `demo/input_switching/` shows a label that updates the
+- [ ] **Done when:** `demo/ui_kit/input_switching/` shows a label that updates the
       moment you touch a key, the mouse, a gamepad, or the screen — with no
       setup beyond enabling the plugin.
 
@@ -111,7 +111,7 @@ Installing is ticking a checkbox.
       right glyph. Covers every component in one place.
 - [ ] `UIButton`: the only real component script, for what styling can't
       do (like a per-variant icon).
-- [ ] **Done when:** `demo/components/` shows the whole kit and is fully
+- [ ] **Done when:** `demo/ui_kit/components/` shows the whole kit and is fully
       navigable by keyboard, gamepad, and touch.
 
 ### Phase 4 — Responsive breakpoints
@@ -122,19 +122,19 @@ Installing is ticking a checkbox.
 - [ ] Register it from `plugin.gd` next to `UIInput`.
 - [ ] Let scenes react with native containers only — `FlowContainer` to
       wrap, `BoxContainer.vertical` toggled. No custom `Container`.
-- [ ] **Done when:** `demo/responsive/` works in mobile portrait, mobile
+- [ ] **Done when:** `demo/ui_kit/responsive/` works in mobile portrait, mobile
       landscape, and a desktop window.
 
 ### Phase 5 — Menu templates
-- [ ] `templates/main_menu/`, `templates/pause_menu/`,
-      `templates/settings_menu/`, built from the Phase 3 kit inside
+- [ ] `main_menu/`, `pause_menu/`, and `settings_menu/` under
+      `addons/ui_kit/templates/`, built from the Phase 3 kit inside
       `Container`s. Override `focus_neighbor_*` only where the automatic
       order is wrong.
 - [ ] Touch-friendly hit areas via `custom_minimum_size`.
 - [ ] `pause_menu`: `PROCESS_MODE_ALWAYS` + `get_tree().paused = true`.
       Nothing custom.
 - [ ] Put a palette picker in the settings menu, as a live demo of Phase 1.
-- [ ] **Done when:** `demo/showcase/` chains all three screens, navigable by
+- [ ] **Done when:** `demo/ui_kit/showcase/` chains all three screens, navigable by
       keyboard, gamepad, and touch, with the active-device indicator
       visible.
 
@@ -146,7 +146,7 @@ Installing is ticking a checkbox.
 - [ ] Export and check by hand on web, one mobile target, and
       Windows/Steam. Input switching and breakpoints must work on all
       three.
-- [ ] A few tests in `tests/` for `UIInput` edge cases (gamepad unplugged
+- [ ] A few tests in `tests/ui_kit/` for `UIInput` edge cases (gamepad unplugged
       mid-game, two gamepads).
 - [ ] Install on a clean project: copy `addons/ui_kit/`, enable the plugin,
       confirm both autoloads appear with no manual setup.
