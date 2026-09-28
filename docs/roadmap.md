@@ -1,282 +1,196 @@
 # Roadmap
 
-Implementation plan for building XaviUI from scratch: a portable UI kit for
-Godot — themed components, ready-made menu templates, and automatic
-keyboard/gamepad/touch switching — designed to drop into new projects (web,
-mobile, Steam) so UI stops being rebuilt from zero every time.
+Plan for building XaviUI: a UI kit for Godot you can drop into any new
+project. It gives you themed components, ready-made menu screens, and
+automatic keyboard/gamepad/touch switching, so you don't rebuild your UI
+from zero every time.
 
-## Core Architecture
+## How It Works
 
-- A `Theme` resource generated from a token resource pair (`XaviPalette` +
-  `XaviTypography`), writing directly into Godot's native Theme Type
-  Variations (`PrimaryButton`, `SecondaryButton`, ...) — colors/fonts/sizes
-  live as data on a resource, not as `StyleBox`/override edits repeated by
-  hand across every variation.
-- An autoload singleton `XaviInput` listens to every `_input(event)` and
-  classifies it by type (`InputEventKey`/`InputEventMouseButton`,
-  `InputEventJoypadButton`/`Motion`, `InputEventScreenTouch`/`Drag`),
-  tracking which device produced the *last* input and emitting
-  `device_changed(device: InputDevice)` only on an actual change.
-- Most components need no script at all — just a Theme Type Variation
-  applied to a native `Button`/`CheckBox`/`Slider`/`Panel`, which already
-  handles hover/pressed/disabled/focus on its own. A single focus overlay
-  (not a script per component) listens to `XaviInput.device_changed` +
-  `get_viewport().gui_get_focus_owner()` to draw the right prompt over
-  whatever currently has focus.
-- A helper autoload `XaviBreakpoints` that only exposes which named
-  breakpoint is active (`mobile_portrait`/`mobile_landscape`/`desktop`)
-  from the viewport size — the actual restructuring is left to Godot's
-  native containers (`FlowContainer`, `BoxContainer.vertical`) reacting to
-  that value, instead of a custom `Container` reimplementing what they
-  already do.
-- Full-screen templates (main menu, pause, settings) are plain scenes
-  composed from the component kit — no separate runtime, so they inherit
-  theming, input switching, and responsive layout for free.
-- The addon ships as a proper Godot `EditorPlugin` (`addons/xavi_ui/plugin.cfg`
-  + `plugin.gd`), not just a folder to drop in — enabling it under
-  `Project Settings > Plugins` calls `add_autoload_singleton()` for
-  `XaviInput`/`XaviBreakpoints` from `_enter_tree()` (and
-  `remove_autoload_singleton()` from `_exit_tree()` on disable), so
-  installing XaviUI is a checkbox, not manually re-typing autoload paths.
+XaviUI leans on what Godot already does and only fills the gaps.
 
-## Value-Add Features
+**Theming from tokens.** Godot has Theme Type Variations (named styles like
+`PrimaryButton` on top of `Button`), but they can't share a color. To change
+your accent color you edit the same hex in every `StyleBoxFlat`, one by one.
+So: `XaviPalette` + `XaviTypography` hold the colors and fonts once, and a
+builder writes them into the Type Variations. Re-skinning the game becomes a
+few field edits in one resource.
 
-Five features go beyond what Godot's native `Control`/`Theme` system gives
-you out of the box. Each is paired with the manual workaround it replaces,
-built in the same phase as the feature itself, to make the gap concrete
-rather than asserted:
+**Input-device detection.** Godot has no idea which device the player is
+using right now. The common trick, `Input.get_connected_joypads().size() > 0`,
+is wrong as soon as a gamepad is plugged in but not used. So: the `XaviInput`
+autoload watches real `_input(event)` events, remembers the *last* device
+used, and emits `device_changed(device)` only when it actually changes.
 
-- **One-click plugin install** (Phase 0, wired in Phases 2 & 4) — Godot's
-  addon convention still expects the consumer to open
-  `Project Settings > Autoload` and manually add each singleton by path;
-  get the path wrong and `XaviInput`/`XaviBreakpoints` silently don't
-  exist. `plugin.gd` calls `add_autoload_singleton()` for both from
-  `_enter_tree()` (and tears them down in `_exit_tree()`), so installing
-  XaviUI is enabling the plugin — nothing to configure by hand.
-- **Design-token theming** (Phase 1) — Godot already has Theme Type
-  Variations (named styles over a base type, like `PrimaryButton`), but
-  none of them reference a shared color — changing the game's "accent"
-  means editing the same hex in every `StyleBoxFlat`, variation by
-  variation. `XaviPalette`/`XaviTypography` hold the tokens once; a
-  builder writes into the existing Type Variations from them, so changing
-  the game's look becomes a handful of field edits in one resource.
-- **Automatic input-device detection & switching** (Phase 2) — Godot has
-  no built-in "what device is the player using right now" concept; the
-  usual workaround (`Input.get_connected_joypads().size() > 0`) is wrong
-  the moment a gamepad is connected but unused. `XaviInput` tracks the
-  actual last-used device from real input events, so prompts/icons swap
-  the instant the player actually switches, in either direction.
-- **Named breakpoints across export targets** (Phase 4) — the native
-  stretch modes (`canvas_items`/`viewport`) scale a fixed layout but don't
-  restructure it; a row of buttons that fits a Steam window overflows a
-  mobile portrait screen. Godot already has containers that restructure
-  (`FlowContainer` wraps, `BoxContainer.vertical` can be toggled at
-  runtime), but no concept of "what screen class is this right now" —
-  `XaviBreakpoints` covers just that gap, without duplicating the
-  containers themselves.
-- **Ready-made, fully-navigable menu templates** (Phase 5) — Godot already
-  computes `focus_neighbor_*` automatically from the nearest Control
-  geometrically, so keyboard/gamepad navigation usually already works just
-  by sitting inside a `Container`; the real work is reviewing the cases
-  where that auto-computation gets it wrong, guaranteeing a minimum touch
-  target size, and shipping the three screens already assembled — instead
-  of every project rebuilding that composition from zero.
+**Components with no scripts.** A native `Button`/`CheckBox`/`Slider`/`Panel`
+with a Type Variation already handles hover, pressed, disabled, and focus by
+itself. So most of the kit is just styles. Only two things need code:
+`XaviFocusPrompt`, one overlay that draws the right button glyph over
+whatever has focus, and `XaviButton`, for the little that styling can't do.
 
-## Prerequisites
+**Named breakpoints.** Godot's stretch modes scale a layout but never
+rearrange it — a row of buttons that fits a Steam window overflows on a
+phone in portrait. Godot *does* have containers that rearrange
+(`FlowContainer` wraps, `BoxContainer.vertical` toggles at runtime), it just
+has no idea what size class the screen is. So: `XaviBreakpoints` reports
+`mobile_portrait` / `mobile_landscape` / `desktop` and nothing more. The
+native containers do the rearranging.
 
-- [ ] Godot's `Control` node system: anchors/margins, containers,
-      `focus_mode` + `focus_neighbor_*` navigation (and when the native
-      auto-computation is enough vs. when it needs a manual override)
-- [ ] Native containers with built-in restructuring: `FlowContainer`
-      (`HFlowContainer`/`VFlowContainer`, automatic wrap) and
-      `BoxContainer.vertical` (toggleable at runtime) — the base
-      `XaviBreakpoints` composes with, not replaces
-- [ ] Theme Type Variations — how Godot already solves "a named style
-      over a base type" (`PrimaryButton` over `Button`) via the inspector,
-      with no subclass needed; `StyleBox` (`StyleBoxFlat`) per state
-      (normal/hover/pressed/disabled/focus), and how override lookup
-      cascades through the scene tree
-- [ ] `Resource` + `class_name` for custom data (`XaviPalette`,
-      `XaviTypography`) vs. hand-editing `.tres` files
-- [ ] The `Input` singleton and event types: `InputEventKey`,
-      `InputEventMouseButton`, `InputEventJoypadButton`/`Motion`,
-      `InputEventScreenTouch`/`Drag`, plus `Input.joy_connection_changed`
-- [ ] `Node.process_mode` (`PROCESS_MODE_ALWAYS`) + `get_tree().paused` —
-      Godot's native pause system, which the pause menu only needs to
-      use, not reimplement
-- [ ] `Viewport`/`DisplayServer` sizing and Godot's stretch modes, to know
-      what a breakpoint system needs to read
-- [ ] Signals/`Callable` for reactive theme + input-device updates
-- [ ] `EditorPlugin` lifecycle (`_enter_tree`/`_exit_tree`) and
-      `add_autoload_singleton()`/`remove_autoload_singleton()` — how a
-      Godot addon becomes an enable/disable toggle in
-      `Project Settings > Plugins` instead of manual autoload setup
-- [ ] `FontVariation.fallbacks` (native font fallback chain) and
-      `DisplayServer.get_display_safe_area()` (native safe-area/notch) —
-      cover Phase 6 without custom logic; Steam Input controller glyph
-      conventions remain manual work (art, not engine)
+**Menu templates.** Godot auto-computes `focus_neighbor_*` from node
+positions, so navigation usually works just by using a `Container`. The real
+work is fixing the cases it gets wrong, keeping touch targets big enough,
+and shipping the three screens already built. Templates are plain scenes
+made from the kit, so they get theming, input switching, and responsive
+layout for free.
 
-## Phased Plan
+**One-click install.** Normally a consumer has to open
+`Project Settings > Autoload` and type each singleton path by hand — get it
+wrong and the autoload silently doesn't exist. So XaviUI ships as a real
+`EditorPlugin`: `plugin.gd` calls `add_autoload_singleton()` in
+`_enter_tree()` and `remove_autoload_singleton()` in `_exit_tree()`.
+Installing is ticking a checkbox.
+
+## What To Learn First
+
+- [ ] `Control` nodes: anchors, containers, `focus_mode` and
+      `focus_neighbor_*` (when the automatic navigation is enough, and when
+      you must override it)
+- [ ] Containers that rearrange on their own: `HFlowContainer`/
+      `VFlowContainer` and `BoxContainer.vertical`
+- [ ] Theme Type Variations and `StyleBoxFlat` per state (normal, hover,
+      pressed, disabled, focus); how theme lookup walks up the tree
+- [ ] `Resource` + `class_name` for custom data, instead of editing `.tres`
+      by hand
+- [ ] Input events: `InputEventKey`, `InputEventMouseButton`,
+      `InputEventJoypadButton`/`Motion`, `InputEventScreenTouch`/`Drag`, and
+      `Input.joy_connection_changed`
+- [ ] `PROCESS_MODE_ALWAYS` + `get_tree().paused` — Godot's own pause system
+- [ ] Viewport sizing and stretch modes
+- [ ] Signals and `Callable` for reacting to theme and device changes
+- [ ] `EditorPlugin` lifecycle and `add_autoload_singleton()` /
+      `remove_autoload_singleton()`
+- [ ] `FontVariation.fallbacks` and `DisplayServer.get_display_safe_area()`
+
+## Phases
 
 ### Phase 0 — Baseline
-- [ ] Sketch the public API you want (`XaviPalette`, `XaviButton`,
-      `XaviInput.get_active_device()`, template scene names) before
-      writing addon internals.
-- [ ] `addons/xavi_ui/plugin.cfg` + `plugin.gd` (empty `EditorPlugin` stub
-      for now) — the addon shows up and can be enabled/disabled under
-      `Project Settings > Plugins` from day one.
-- [ ] **Deliverable:** written notes on the desired API shape (this file +
-      `api_design.md`), plus a minimal `plugin.cfg`/`plugin.gd` that
-      already appears in `Project Settings > Plugins`.
+- [ ] Write down the public API you want (`XaviPalette`, `XaviButton`,
+      `XaviInput.get_active_device()`, template names) before writing any
+      internals.
+- [ ] `addons/xavi_ui/plugin.cfg` + an empty `plugin.gd`.
+- [ ] **Done when:** the API notes exist (this file + `api_design.md`) and
+      the addon shows up under `Project Settings > Plugins`.
 
-### Phase 1 — Design tokens & Theme generation
-- [ ] `XaviPalette` resource: token colors + semantic roles (background,
-      surface, primary/secondary text, accent,
-      info/warning/error/critical).
-- [ ] `XaviTypography` resource: bundled default fonts + a type scale
-      (heading, body, button label, caption).
-- [ ] A builder (`XaviThemeBuilder` or a static method) that writes into a
-      `Theme`'s native Type Variations (`PrimaryButton`, `SecondaryPanel`,
-      ...) from a `XaviPalette` + `XaviTypography` pair — no separate
-      Theme resources generated per variant.
-- [ ] **Deliverable:** `demo/theming/` scene with a stock Godot `Button`
-      and `Panel` (no script, just a Type Variation), where swapping the
-      `XaviPalette` resource in the inspector re-skins both live.
+### Phase 1 — Tokens & theme generation
+- [ ] `XaviPalette`: colors with names by role (background, surface, text
+      primary/secondary, accent, info/warning/error/critical).
+- [ ] `XaviTypography`: bundled fonts + sizes (heading, body, button label,
+      caption).
+- [ ] A builder that writes a `XaviPalette` + `XaviTypography` pair into a
+      `Theme`'s Type Variations.
+- [ ] **Done when:** `demo/theming/` holds a plain `Button` and `Panel` with
+      no scripts, and swapping the palette in the inspector re-skins both
+      live.
 
-### Phase 2 — Input-device detection & switching
-- [ ] Reproduce the naive workaround by hand first (guessing the device
-      from `Input.get_connected_joypads().size()`), to see the gap
-      firsthand.
-- [ ] `XaviInput` autoload: tracks the last-used device from real
-      `_input(event)` events, exposes `get_active_device() -> InputDevice`
-      and emits `device_changed(device: InputDevice)`.
-- [ ] `plugin.gd` registers `XaviInput` via `add_autoload_singleton()` in
-      `_enter_tree()` (and `remove_autoload_singleton()` in `_exit_tree()`)
-      — enabling the plugin is the only setup step, no manual
-      `Project Settings > Autoload` entry.
-- [ ] **Deliverable:** `demo/input_switching/` scene with a live label
-      showing the active device, updating the instant you touch a key,
-      the mouse, a connected gamepad, or the touchscreen (web/mobile
-      export) — reachable purely by enabling the plugin.
+### Phase 2 — Input-device switching
+- [ ] First do it the naive way by hand (guess from
+      `Input.get_connected_joypads().size()`) so you see the problem
+      yourself.
+- [ ] `XaviInput` autoload: `get_active_device() -> InputDevice` and a
+      `device_changed(device: InputDevice)` signal.
+- [ ] Register it from `plugin.gd`.
+- [ ] **Done when:** `demo/input_switching/` shows a label that updates the
+      moment you touch a key, the mouse, a gamepad, or the screen — with no
+      setup beyond enabling the plugin.
 
-### Phase 3 — Core component kit
-- [ ] Theme Type Variations for `Button` (primary/secondary/icon),
-      `CheckBox`, `HSlider`/`VSlider`, `Panel` — native Godot nodes, no
-      subclass; hover/pressed/disabled/focus already come free from the
-      per-state `StyleBox` those native controls already support.
-- [ ] A single focus overlay (`XaviFocusPrompt`, not a script per
-      component): listens to `XaviInput.device_changed` +
-      `get_viewport().gui_get_focus_owner()` and draws the right glyph
-      over whatever currently has focus — covers button, slider,
-      checkbox, etc. in one place.
-- [ ] `XaviButton` as the one real component script, only for what needs
-      logic beyond styling (e.g. a dynamic icon per variant) —
-      everything else stays script-free.
-- [ ] **Deliverable:** `demo/components/` scene showcasing the full kit,
-      navigable end-to-end by keyboard, gamepad, and touch.
+### Phase 3 — Component kit
+- [ ] Type Variations for `Button` (primary/secondary/icon), `CheckBox`,
+      `HSlider`/`VSlider`, `Panel`. Native nodes, no subclasses.
+- [ ] `XaviFocusPrompt`: one overlay that reads
+      `XaviInput.device_changed` + `gui_get_focus_owner()` and draws the
+      right glyph. Covers every component in one place.
+- [ ] `XaviButton`: the only real component script, for what styling can't
+      do (like a per-variant icon).
+- [ ] **Done when:** `demo/components/` shows the whole kit and is fully
+      navigable by keyboard, gamepad, and touch.
 
 ### Phase 4 — Responsive breakpoints
-- [ ] Reproduce the problem by hand first (a fixed layout scaled by the
-      native stretch modes, overflowing on a mobile portrait screen), to
-      see the gap firsthand.
-- [ ] `XaviBreakpoints` autoload: reads the viewport size, exposes
-      `get_active_breakpoint() -> StringName` and emits
-      `breakpoint_changed(breakpoint: StringName)` for defined names
-      (e.g. `mobile_portrait`, `mobile_landscape`, `desktop`).
-- [ ] `plugin.gd` registers `XaviBreakpoints` via `add_autoload_singleton()`
-      alongside `XaviInput` — both autoloads come from the same
-      enable/disable toggle, nothing added by hand.
-- [ ] Scenes react to the active breakpoint using native containers —
-      `FlowContainer` for wrapping, `BoxContainer.vertical` toggled — no
-      custom `Container` at all.
-- [ ] **Deliverable:** `demo/responsive/` scene, resized/tested across
-      mobile-portrait, mobile-landscape, and desktop/Steam window aspect
-      ratios, reacting to `XaviBreakpoints` using only native containers.
+- [ ] First break it by hand: a fixed layout that overflows in mobile
+      portrait.
+- [ ] `XaviBreakpoints` autoload: `get_active_breakpoint() -> StringName`
+      and a `breakpoint_changed(breakpoint: StringName)` signal.
+- [ ] Register it from `plugin.gd` next to `XaviInput`.
+- [ ] Let scenes react with native containers only — `FlowContainer` to
+      wrap, `BoxContainer.vertical` toggled. No custom `Container`.
+- [ ] **Done when:** `demo/responsive/` works in mobile portrait, mobile
+      landscape, and a desktop window.
 
-### Phase 5 — Full-screen templates
+### Phase 5 — Menu templates
 - [ ] `templates/main_menu/`, `templates/pause_menu/`,
-      `templates/settings_menu/` scenes assembled from the Phase 3 kit,
-      inside `Container`s to take advantage of Godot's native
-      `focus_neighbor_*` auto-computation; manual overrides only where
-      that auto-computation picks wrong.
-- [ ] Touch-sized hit areas via `custom_minimum_size`.
-- [ ] `pause_menu`: `process_mode = PROCESS_MODE_ALWAYS` on the scene +
-      `get_tree().paused = true` — Godot's native pause system, no
-      custom pause logic.
-- [ ] Settings menu includes a theme/palette picker as a live example of
-      Phase 1's token swap.
-- [ ] **Deliverable:** `demo/showcase/` scene chaining all three
-      templates, fully navigable by keyboard, gamepad, and touch, with
-      the active-device indicator from Phase 2 visible throughout.
+      `templates/settings_menu/`, built from the Phase 3 kit inside
+      `Container`s. Override `focus_neighbor_*` only where the automatic
+      order is wrong.
+- [ ] Touch-friendly hit areas via `custom_minimum_size`.
+- [ ] `pause_menu`: `PROCESS_MODE_ALWAYS` + `get_tree().paused = true`.
+      Nothing custom.
+- [ ] Put a palette picker in the settings menu, as a live demo of Phase 1.
+- [ ] **Done when:** `demo/showcase/` chains all three screens, navigable by
+      keyboard, gamepad, and touch, with the active-device indicator
+      visible.
 
 ### Phase 6 — Cross-platform polish
-- [ ] `FontVariation.fallbacks` (native fallback chain) configured on the
-      bundled fonts, validated on an HTML5/web export — no custom
-      fallback logic.
-- [ ] `DisplayServer.get_display_safe_area()` (native) applied as margin
-      on the full-screen templates — no custom notch detection.
-- [ ] Export and manually verify on at least: Web (HTML5), one mobile
-      target (Android/iOS), and Windows/Steam — input switching and
-      responsive breakpoints must hold on each.
-- [ ] Lightweight test coverage in `tests/` for `XaviInput` device-detection
-      edge cases (device disconnect mid-session, multiple gamepads).
-- [ ] Validate the full install flow on a clean project: copy
-      `addons/xavi_ui/`, enable the plugin in
-      `Project Settings > Plugins`, and confirm `XaviInput` and
-      `XaviBreakpoints` both appear with zero manual autoload
-      configuration.
-- [ ] **Deliverable:** the addon usable standalone (drop `addons/xavi_ui/`
-      into another project and enable the plugin), validated on all three
-      export targets above.
+- [ ] Set `FontVariation.fallbacks` on the bundled fonts and check it on a
+      web export.
+- [ ] Apply `DisplayServer.get_display_safe_area()` as margin on the
+      templates.
+- [ ] Export and check by hand on web, one mobile target, and
+      Windows/Steam. Input switching and breakpoints must work on all
+      three.
+- [ ] A few tests in `tests/` for `XaviInput` edge cases (gamepad unplugged
+      mid-game, two gamepads).
+- [ ] Install on a clean project: copy `addons/xavi_ui/`, enable the plugin,
+      confirm both autoloads appear with no manual setup.
+- [ ] **Done when:** the addon works standalone on all three targets above.
 
-## Self-Check Questions
+## Questions To Check Yourself
 
-1. Why generate a `Theme` from a token resource instead of editing
-   `Theme` overrides directly in the inspector — what breaks at
-   "re-skin the whole game" scale if you don't?
-2. What's wrong with guessing the active input device from
-   `Input.get_connected_joypads().size() > 0`, and what does `XaviInput`
-   need to track instead to get it right?
-3. Why do full-screen templates belong in the addon at all, instead of
-   leaving each consuming project to wire its own focus navigation?
-4. Why does `XaviBreakpoints` only expose which breakpoint is active,
-   without restructuring anything itself — what does that avoid
-   duplicating from Godot's native containers (`FlowContainer`,
-   `BoxContainer.vertical`)?
-5. Why does bundling default fonts inside `addons/xavi_ui/` matter
-   specifically for the web export target?
-6. If a player has a gamepad connected but is currently pressing
-   keyboard keys, what should `XaviInput.get_active_device()` return,
-   and why?
-7. Why doesn't most of the kit's components need any script at all —
-   what does Godot's Theme Type Variation already solve on its own, and
-   what's left for `XaviFocusPrompt`/`XaviButton` to cover?
-8. Why centralize the focus prompt in a single `XaviFocusPrompt` instead
-   of repeating the same `device_changed` logic in every component?
-9. Why does `plugin.gd` register `XaviInput`/`XaviBreakpoints` via
-   `add_autoload_singleton()` in `_enter_tree()` instead of documenting
-   "add these autoloads manually" in a README — what fails silently if a
-   consumer mistypes the path?
+1. Why build the `Theme` from a token resource instead of editing theme
+   overrides in the inspector? What breaks when you re-skin a whole game?
+2. What's wrong with `Input.get_connected_joypads().size() > 0`, and what
+   does `XaviInput` track instead?
+3. If a gamepad is plugged in but the player is typing, what should
+   `get_active_device()` return, and why?
+4. Why do most components need no script? What does a Type Variation
+   already handle, and what's left for `XaviFocusPrompt`/`XaviButton`?
+5. Why one shared focus prompt instead of `device_changed` logic in every
+   component?
+6. Why does `XaviBreakpoints` only report the active breakpoint and never
+   rearrange anything?
+7. Why ship the menu templates in the addon instead of letting each project
+   wire its own navigation?
+8. Why bundle fonts inside `addons/xavi_ui/`, and why does that matter most
+   for the web export?
+9. Why register the autoloads from `plugin.gd` instead of documenting
+   "add these by hand"? What fails silently if the path is mistyped?
 
 ## Done Criteria
 
-- Can explain the token → `Theme` generation pipeline and the
-  input-device detection approach from memory, no notes.
-- Component kit, responsive layout, input switching, and all three menu
-  templates implemented end-to-end.
-- A brand-new Godot project can copy `addons/xavi_ui/`, enable the plugin
-  in `Project Settings > Plugins`, drop in the three templates, and ship a
-  themed, fully keyboard/gamepad/touch-navigable menu flow without writing
-  new UI code or manually configuring autoloads.
-- Verified working on Web, one mobile export, and Windows/Steam.
+- You can explain the token → `Theme` pipeline and the device-detection
+  approach from memory.
+- Component kit, responsive layout, input switching, and all three
+  templates are finished.
+- A brand-new project can copy `addons/xavi_ui/`, enable the plugin, drop in
+  the templates, and ship a themed menu flow that works with keyboard,
+  gamepad, and touch — no new UI code, no manual autoloads.
+- Verified on web, one mobile export, and Windows/Steam.
 
 ## References
 
-- [Godot: Control node UI tutorials](https://docs.godotengine.org/en/stable/tutorials/ui/index.html)
-- [Godot: Containers (Size and anchors)](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html)
-- [Godot: GUI skinning (Theme)](https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html)
-- [Godot: Theme Type Variations](https://docs.godotengine.org/en/stable/tutorials/ui/gui_theme_type_variations.html)
-- [Godot: Pausing games (process mode)](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html)
-- [Godot: InputEvent class reference](https://docs.godotengine.org/en/stable/classes/class_inputevent.html)
-- [Godot: Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html)
-- [Godot: Making plugins (EditorPlugin)](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/making_plugins.html)
+- [Control node UI tutorials](https://docs.godotengine.org/en/stable/tutorials/ui/index.html)
+- [Size and anchors](https://docs.godotengine.org/en/stable/tutorials/ui/size_and_anchors.html)
+- [GUI skinning (Theme)](https://docs.godotengine.org/en/stable/tutorials/ui/gui_skinning.html)
+- [Theme Type Variations](https://docs.godotengine.org/en/stable/tutorials/ui/gui_theme_type_variations.html)
+- [Pausing games](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html)
+- [InputEvent class reference](https://docs.godotengine.org/en/stable/classes/class_inputevent.html)
+- [Multiple resolutions](https://docs.godotengine.org/en/stable/tutorials/rendering/multiple_resolutions.html)
+- [Making plugins (EditorPlugin)](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/making_plugins.html)
