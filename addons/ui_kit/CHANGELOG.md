@@ -32,3 +32,10 @@ and this addon uses [Semantic Versioning](https://semver.org/).
   last pad is unplugged.
 - `ui_kit.gd` registers the `UIInput` autoload on enable and removes it on
   disable, leaving an autoload the project declared itself alone.
+- `UIFocusPrompt`: a single `CanvasLayer` overlay that draws the active
+  device's glyph beside the focused control, flipping to its left at the screen
+  edge and borrowing the control's own text colour.
+- `UIPromptSet`: the swappable glyph-per-device resource `UIFocusPrompt` reads,
+  with a default set built from Kenney's CC0 input prompts.
+- `UIButton`: a `Button` whose `variation` enum drives
+  `theme_type_variation`, with a minimum touch target applied per node.

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="UIPromptSet" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_kit/components/focus_prompt/ui_prompt_set.gd" id="1_prompts"]
+[ext_resource type="Texture2D" path="res://addons/ui_kit/components/focus_prompt/glyphs/keyboard_enter.svg" id="2_keyboard"]
+[ext_resource type="Texture2D" path="res://addons/ui_kit/components/focus_prompt/glyphs/xbox_button_a.svg" id="3_gamepad"]
+[ext_resource type="Texture2D" path="res://addons/ui_kit/components/focus_prompt/glyphs/touch_tap.svg" id="4_touch"]
+
+[resource]
+script = ExtResource("1_prompts")
+resource_name = "UI Kit Default Prompts"
+keyboard_mouse = ExtResource("2_keyboard")
+gamepad = ExtResource("3_gamepad")
+touch = ExtResource("4_touch")

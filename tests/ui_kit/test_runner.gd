@@ -11,6 +11,7 @@ extends Node
 const TESTS: PackedStringArray = [
 	"res://tests/ui_kit/test_ui_input.gd",
 	"res://tests/ui_kit/test_ui_theme.gd",
+	"res://tests/ui_kit/test_ui_components.gd",
 ]
 
 

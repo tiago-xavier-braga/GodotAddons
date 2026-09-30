@@ -110,14 +110,21 @@ editor closes. Installing is ticking a checkbox.
       setup beyond enabling the plugin.
 
 ### Phase 3 — Component kit
-- [ ] Type Variations for `Button` (primary/secondary/icon), `CheckBox`,
-      `HSlider`/`VSlider`, `Panel`. Native nodes, no subclasses.
-- [ ] `UIFocusPrompt`: one overlay that reads
+- [x] Type Variations for `Button` (primary/secondary/icon), `CheckBox`,
+      `HSlider`/`VSlider`, `Panel`. Native nodes, no subclasses. Two
+      surprises: `CheckBox` has `checkbox_checked_color`, so the tick glyphs
+      take the palette with no textures of our own; a slider's grabber is an
+      icon Godot does *not* modulate, so the builder draws that one circle
+      from the palette instead.
+- [x] `UIFocusPrompt`: one overlay that reads
       `UIInput.device_changed` + `gui_get_focus_owner()` and draws the
-      right glyph. Covers every component in one place.
-- [ ] `UIButton`: the only real component script, for what styling can't
-      do (like a per-variant icon).
-- [ ] **Done when:** `demo/ui_kit/components/` shows the whole kit and is fully
+      right glyph. Covers every component in one place. Glyphs live in a
+      swappable `UIPromptSet`; an empty slot means "no prompt on this
+      device".
+- [x] `UIButton`: the only real component script — a variation enum instead
+      of a mistypeable string, and the minimum touch target a `Theme` cannot
+      express.
+- [x] **Done when:** `demo/ui_kit/components/` shows the whole kit and is fully
       navigable by keyboard, gamepad, and touch.
 
 ### Phase 4 — Responsive breakpoints

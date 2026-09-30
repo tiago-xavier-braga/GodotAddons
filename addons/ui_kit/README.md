@@ -5,7 +5,8 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** in progress (Phases 1-2 of 6 done — theming, input switching). See the
+> **Status:** in progress (Phases 1-3 of 6 done — theming, input switching,
+> components). See the
 > [roadmap](../../docs/ui_kit/roadmap.md) for the phased plan and the
 > [API sketch](../../docs/ui_kit/api_design.md) for the intended public
 > surface.
@@ -76,6 +77,24 @@ deliberately ignores three things that would otherwise make it lie: events
 Godot synthesised from another device (a tap becomes a mouse click whenever
 `emulate_mouse_from_touch` is on, which is the default), analog stick drift
 below the deadzone, and mouse movement of a pixel or two.
+
+## Components
+
+Most of the kit is styling, so a stock `Button`, `CheckBox`, `HSlider`, `Panel`
+or `Label` with a variation set is a first-class component — there is no
+subclass to remember. Two pieces do carry a script:
+
+**`UIFocusPrompt`** — instance
+`components/focus_prompt/ui_focus_prompt.tscn` once per screen. It draws the
+active device's glyph beside whatever has focus, and that is the whole setup;
+it needs no help from the controls it points at. Swap the artwork by pointing
+its `prompts` field at your own `UIPromptSet`, and clear a slot in that
+resource to show no prompt for that device.
+
+**`UIButton`** — a `Button` that picks its variation from an enum
+(`PRIMARY`/`SECONDARY`/`ICON`) instead of a free-text string, and holds itself
+to `UIMetrics.MIN_TOUCH_TARGET`. Use it where a typo would be expensive; a
+plain `Button` with `theme_type_variation` set is equally supported.
 
 ## Name prefix
 

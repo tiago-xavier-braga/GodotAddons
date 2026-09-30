@@ -12,3 +12,16 @@ they cover.
 - Why bundled: a web export cannot fall back on a font installed on the
   player's machine, so the kit has to carry its own. See
   [`UITypography`](theme/ui_typography.gd).
+
+## Input prompt glyphs — `components/focus_prompt/glyphs/`
+
+- Source: Kenney's [Input Prompts](https://kenney.nl/assets/input-prompts)
+  pack, version 1.5 — three files from it (`keyboard_enter.svg`,
+  `xbox_button_a.svg`, `touch_tap.svg`), not the whole set.
+- License: CC0 1.0 (public domain) — full notice in
+  [`components/focus_prompt/glyphs/kenney_license.txt`](components/focus_prompt/glyphs/kenney_license.txt).
+- Why bundled: [`UIFocusPrompt`](components/focus_prompt/ui_focus_prompt.gd)
+  has to draw *something* out of the box. They are plain white, so the palette
+  tints them. To use PlayStation or Switch artwork instead, point a
+  [`UIPromptSet`](components/focus_prompt/ui_prompt_set.gd) at your own files —
+  the addon does not need to change.
