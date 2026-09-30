@@ -5,7 +5,7 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** in progress (Phase 1 of 6 done — token-driven theming). See the
+> **Status:** in progress (Phases 1-2 of 6 done — theming, input switching). See the
 > [roadmap](../../docs/ui_kit/roadmap.md) for the phased plan and the
 > [API sketch](../../docs/ui_kit/api_design.md) for the intended public
 > surface.
@@ -58,6 +58,24 @@ it — there is no "rebuild" step, and no hex to find twice.
 
 `theme/default_theme.tres` stores only the two token references; the style
 boxes are generated on load, which is why the file is a dozen lines.
+
+## Input-device switching
+
+`UIInput` reports which device the player is using *right now*, from real input
+events rather than from what is plugged in:
+
+```gdscript
+if UIInput.get_active_device() == UIInputDevice.Kind.GAMEPAD:
+    show_pad_hint()
+
+UIInput.device_changed.connect(_on_device_changed)
+```
+
+It only emits `device_changed` when the answer actually changes, and it
+deliberately ignores three things that would otherwise make it lie: events
+Godot synthesised from another device (a tap becomes a mouse click whenever
+`emulate_mouse_from_touch` is on, which is the default), analog stick drift
+below the deadzone, and mouse movement of a pixel or two.
 
 ## Name prefix
 

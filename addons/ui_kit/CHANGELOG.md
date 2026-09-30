@@ -25,3 +25,10 @@ and this addon uses [Semantic Versioning](https://semver.org/).
 - `UIMetrics`: the geometry constants the builder and the templates share.
 - Bundled Noto Sans (Apache-2.0), so a web export has a font of its own — see
   [`THIRDPARTY.md`](THIRDPARTY.md).
+- `UIInput` autoload: `get_active_device()`, `get_active_device_name()`,
+  `classify()` and the `device_changed` signal, plus the `UIInputDevice.Kind`
+  enum. Ignores events Godot synthesised from another device, stick drift below
+  the deadzone, and sub-pixel mouse nudges; falls back off `gamepad` when the
+  last pad is unplugged.
+- `ui_kit.gd` registers the `UIInput` autoload on enable and removes it on
+  disable, leaving an autoload the project declared itself alone.

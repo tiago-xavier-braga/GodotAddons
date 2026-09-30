@@ -96,13 +96,16 @@ editor closes. Installing is ticking a checkbox.
       live.
 
 ### Phase 2 — Input-device switching
-- [ ] First do it the naive way by hand (guess from
+- [x] First do it the naive way by hand (guess from
       `Input.get_connected_joypads().size()`) so you see the problem
-      yourself.
-- [ ] `UIInput` autoload: `get_active_device() -> InputDevice` and a
-      `device_changed(device: InputDevice)` signal.
-- [ ] Register it from `ui_kit.gd`.
-- [ ] **Done when:** `demo/ui_kit/input_switching/` shows a label that updates the
+      yourself. It lives on in the demo as the top row, next to the real
+      answer.
+- [x] `UIInput` autoload: `get_active_device() -> UIInputDevice.Kind` and a
+      `device_changed(device: UIInputDevice.Kind)` signal. The enum sits in
+      its own `UIInputDevice` class, because GDScript will not let the
+      autoload's script declare a `class_name` matching the autoload name.
+- [x] Register it from `ui_kit.gd`.
+- [x] **Done when:** `demo/ui_kit/input_switching/` shows a label that updates the
       moment you touch a key, the mouse, a gamepad, or the screen — with no
       setup beyond enabling the plugin.
 
