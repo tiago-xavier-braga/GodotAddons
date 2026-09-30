@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="UITypography" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_kit/theme/ui_typography.gd" id="1_typography"]
+[ext_resource type="FontFile" path="res://addons/ui_kit/fonts/noto_sans_regular.ttf" id="2_regular"]
+[ext_resource type="FontFile" path="res://addons/ui_kit/fonts/noto_sans_bold.ttf" id="3_bold"]
+
+[resource]
+script = ExtResource("1_typography")
+resource_name = "UI Kit Default Typography"
+font_default = ExtResource("2_regular")
+font_heading = ExtResource("3_bold")

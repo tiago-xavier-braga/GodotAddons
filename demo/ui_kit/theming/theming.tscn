@@ -1,0 +1,118 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://addons/ui_kit/theme/default_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://demo/ui_kit/theming/theming.gd" id="2_script"]
+[ext_resource type="Resource" path="res://addons/ui_kit/theme/default_palette.tres" id="3_default"]
+[ext_resource type="Resource" path="res://demo/ui_kit/theming/daylight_palette.tres" id="4_daylight"]
+
+[node name="Theming" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+palettes = Array[Resource]([ExtResource("3_default"), ExtResource("4_daylight")])
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Layout" type="VBoxContainer" parent="Background/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Background/Margin/Layout"]
+layout_mode = 2
+theme_type_variation = &"UIHeading"
+text = "Theming from tokens"
+
+[node name="Intro" type="Label" parent="Background/Margin/Layout"]
+layout_mode = 2
+theme_type_variation = &"UICaption"
+text = "One UIPalette feeds every style box in the theme. Nothing below this scene's root has a script."
+autowrap_mode = 3
+
+[node name="Controls" type="HBoxContainer" parent="Background/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SwapButton" type="Button" parent="Background/Margin/Layout/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UIPrimaryButton"
+text = "Swap palette"
+
+[node name="PaletteName" type="Label" parent="Background/Margin/Layout/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UIBody"
+vertical_alignment = 1
+
+[node name="Card" type="PanelContainer" parent="Background/Margin/Layout"]
+layout_mode = 2
+theme_type_variation = &"UIPanel"
+
+[node name="CardLayout" type="VBoxContainer" parent="Background/Margin/Layout/Card"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CardTitle" type="Label" parent="Background/Margin/Layout/Card/CardLayout"]
+layout_mode = 2
+theme_type_variation = &"UIBody"
+text = "Stock controls, no scripts"
+
+[node name="Row" type="HBoxContainer" parent="Background/Margin/Layout/Card/CardLayout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Primary" type="Button" parent="Background/Margin/Layout/Card/CardLayout/Row"]
+layout_mode = 2
+theme_type_variation = &"UIPrimaryButton"
+text = "Primary"
+
+[node name="Secondary" type="Button" parent="Background/Margin/Layout/Card/CardLayout/Row"]
+layout_mode = 2
+theme_type_variation = &"UISecondaryButton"
+text = "Secondary"
+
+[node name="Plain" type="Button" parent="Background/Margin/Layout/Card/CardLayout/Row"]
+layout_mode = 2
+text = "Plain Button"
+
+[node name="Disabled" type="Button" parent="Background/Margin/Layout/Card/CardLayout/Row"]
+layout_mode = 2
+disabled = true
+text = "Disabled"
+
+[node name="Check" type="CheckBox" parent="Background/Margin/Layout/Card/CardLayout"]
+layout_mode = 2
+button_pressed = true
+text = "A check box"
+
+[node name="Slider" type="HSlider" parent="Background/Margin/Layout/Card/CardLayout"]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+value = 60.0
+
+[node name="Spacer" type="Control" parent="Background/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3

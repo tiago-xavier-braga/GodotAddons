@@ -46,9 +46,12 @@ layout for free.
 **One-click install.** Normally a consumer has to open
 `Project Settings > Autoload` and type each singleton path by hand — get it
 wrong and the autoload silently doesn't exist. So UI Kit ships as a real
-`EditorPlugin`: `plugin.gd` calls `add_autoload_singleton()` in
-`_enter_tree()` and `remove_autoload_singleton()` in `_exit_tree()`.
-Installing is ticking a checkbox.
+`EditorPlugin`: `ui_kit.gd` calls `add_autoload_singleton()` in
+`_enable_plugin()` and `remove_autoload_singleton()` in `_disable_plugin()`
+— the enable/disable hooks, which run once each. Not
+`_enter_tree()`/`_exit_tree()`, which fire on every editor restart and would
+strip the autoload back out of the consumer's `project.godot` every time the
+editor closes. Installing is ticking a checkbox.
 
 ## What To Learn First
 
@@ -74,21 +77,21 @@ Installing is ticking a checkbox.
 ## Phases
 
 ### Phase 0 — Baseline
-- [ ] Write down the public API you want (`UIPalette`, `UIButton`,
+- [x] Write down the public API you want (`UIPalette`, `UIButton`,
       `UIInput.get_active_device()`, template names) before writing any
       internals.
-- [ ] `addons/ui_kit/plugin.cfg` + an empty `plugin.gd`.
-- [ ] **Done when:** the API notes exist (this file + `api_design.md`) and
+- [x] `addons/ui_kit/plugin.cfg` + an empty `ui_kit.gd`.
+- [x] **Done when:** the API notes exist (this file + `api_design.md`) and
       the addon shows up under `Project Settings > Plugins`.
 
 ### Phase 1 — Tokens & theme generation
-- [ ] `UIPalette`: colors with names by role (background, surface, text
+- [x] `UIPalette`: colors with names by role (background, surface, text
       primary/secondary, accent, info/warning/error/critical).
-- [ ] `UITypography`: bundled fonts + sizes (heading, body, button label,
+- [x] `UITypography`: bundled fonts + sizes (heading, body, button label,
       caption).
-- [ ] A builder that writes a `UIPalette` + `UITypography` pair into a
+- [x] A builder that writes a `UIPalette` + `UITypography` pair into a
       `Theme`'s Type Variations.
-- [ ] **Done when:** `demo/ui_kit/theming/` holds a plain `Button` and `Panel` with
+- [x] **Done when:** `demo/ui_kit/theming/` holds a plain `Button` and `Panel` with
       no scripts, and swapping the palette in the inspector re-skins both
       live.
 
@@ -98,7 +101,7 @@ Installing is ticking a checkbox.
       yourself.
 - [ ] `UIInput` autoload: `get_active_device() -> InputDevice` and a
       `device_changed(device: InputDevice)` signal.
-- [ ] Register it from `plugin.gd`.
+- [ ] Register it from `ui_kit.gd`.
 - [ ] **Done when:** `demo/ui_kit/input_switching/` shows a label that updates the
       moment you touch a key, the mouse, a gamepad, or the screen — with no
       setup beyond enabling the plugin.
@@ -119,7 +122,7 @@ Installing is ticking a checkbox.
       portrait.
 - [ ] `UIBreakpoints` autoload: `get_active_breakpoint() -> StringName`
       and a `breakpoint_changed(breakpoint: StringName)` signal.
-- [ ] Register it from `plugin.gd` next to `UIInput`.
+- [ ] Register it from `ui_kit.gd` next to `UIInput`.
 - [ ] Let scenes react with native containers only — `FlowContainer` to
       wrap, `BoxContainer.vertical` toggled. No custom `Container`.
 - [ ] **Done when:** `demo/ui_kit/responsive/` works in mobile portrait, mobile
@@ -170,7 +173,7 @@ Installing is ticking a checkbox.
    wire its own navigation?
 8. Why bundle fonts inside `addons/ui_kit/`, and why does that matter most
    for the web export?
-9. Why register the autoloads from `plugin.gd` instead of documenting
+9. Why register the autoloads from `ui_kit.gd` instead of documenting
    "add these by hand"? What fails silently if the path is mistyped?
 
 ## Done Criteria

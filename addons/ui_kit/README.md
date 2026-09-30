@@ -5,7 +5,7 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** planning (Phase 0). Nothing is implemented yet — see the
+> **Status:** in progress (Phase 1 of 6 done — token-driven theming). See the
 > [roadmap](../../docs/ui_kit/roadmap.md) for the phased plan and the
 > [API sketch](../../docs/ui_kit/api_design.md) for the intended public
 > surface.
@@ -31,12 +31,33 @@ project rebuilds the same four things:
 
 ## Install
 
-Not available yet — there is no code until Phase 1 of the
-[roadmap](../../docs/ui_kit/roadmap.md) lands.
-
-Once there is: copy this folder into `addons/ui_kit/` in the target project and
-enable **UI Kit** under `Project Settings > Plugins`. Enabling it registers the
+Copy this folder into `addons/ui_kit/` in the target project and enable
+**UI Kit** under `Project Settings > Plugins`. Enabling it registers the
 `UIInput` and `UIBreakpoints` autoloads — there is nothing to add by hand.
+
+## Theming
+
+Point a scene root's `theme` at `theme/default_theme.tres` and every stock
+`Button`, `CheckBox`, `HSlider`, `Panel` and `Label` under it is styled, with
+no scripts involved. The variations are named in
+[`theme/ui_variants.gd`](theme/ui_variants.gd):
+
+| Variation            | Base type | Use                              |
+| -------------------- | --------- | -------------------------------- |
+| `UIPrimaryButton`    | `Button`  | the one action a screen wants    |
+| `UISecondaryButton`  | `Button`  | outlined, quieter alternative    |
+| `UIIconButton`       | `Button`  | square, icon only                |
+| `UIPanel`            | `Panel`   | a raised card on the background  |
+| `UIHeading`          | `Label`   | screen titles                    |
+| `UIBody`             | `Label`   | ordinary text                    |
+| `UICaption`          | `Label`   | secondary, smaller text          |
+
+To re-skin, duplicate `theme/default_palette.tres`, edit the colors, and drop
+it into the theme's `palette` field. `UITheme` regenerates every style box from
+it — there is no "rebuild" step, and no hex to find twice.
+
+`theme/default_theme.tres` stores only the two token references; the style
+boxes are generated on load, which is why the file is a dozen lines.
 
 ## Name prefix
 
