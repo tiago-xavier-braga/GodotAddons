@@ -39,3 +39,10 @@ and this addon uses [Semantic Versioning](https://semver.org/).
   with a default set built from Kenney's CC0 input prompts.
 - `UIButton`: a `Button` whose `variation` enum drives
   `theme_type_variation`, with a minimum touch target applied per node.
+- `UIBreakpoints` autoload: `get_active_breakpoint()`, `classify()`,
+  `get_screen_size()` and the `breakpoint_changed` signal, plus the
+  `UIBreakpoint` size-class names and `UIBreakpoint.is_mobile()`. Measures the
+  window in density-independent pixels, so a phone is not mistaken for a
+  desktop.
+- `ui_kit/breakpoints/desktop_min_short_side` project setting, registered on
+  enable; a value the project changed is left alone on disable.

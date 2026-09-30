@@ -128,15 +128,33 @@ editor closes. Installing is ticking a checkbox.
       navigable by keyboard, gamepad, and touch.
 
 ### Phase 4 — Responsive breakpoints
-- [ ] First break it by hand: a fixed layout that overflows in mobile
-      portrait.
-- [ ] `UIBreakpoints` autoload: `get_active_breakpoint() -> StringName`
-      and a `breakpoint_changed(breakpoint: StringName)` signal.
-- [ ] Register it from `ui_kit.gd` next to `UIInput`.
-- [ ] Let scenes react with native containers only — `FlowContainer` to
+- [x] First break it by hand: a fixed layout that overflows in mobile
+      portrait. It stays in the demo as row 1.
+- [x] `UIBreakpoints` autoload: `get_active_breakpoint() -> StringName`
+      and a `breakpoint_changed(size_class: StringName)` signal — the
+      parameter cannot be called `breakpoint`, which is a GDScript keyword.
+- [x] Register it from `ui_kit.gd` next to `UIInput`, along with a
+      `ui_kit/breakpoints/desktop_min_short_side` project setting so the
+      threshold is retunable without editing the addon.
+- [x] Let scenes react with native containers only — `FlowContainer` to
       wrap, `BoxContainer.vertical` toggled. No custom `Container`.
-- [ ] **Done when:** `demo/ui_kit/responsive/` works in mobile portrait, mobile
+- [x] **Done when:** `demo/ui_kit/responsive/` works in mobile portrait, mobile
       landscape, and a desktop window.
+
+Two things the plan had wrong, both found by running it:
+
+- **Measure the window, not the viewport.** The obvious source is
+  `get_visible_rect()`, and it cannot work: under a `canvas_items` stretch
+  mode with an `expand` aspect, the canvas keeps the project's base width
+  and grows only in the other direction, so its shorter side barely moves
+  however the screen is resized. `UIBreakpoints` reads the window instead,
+  divided by `DisplayServer.screen_get_scale()` — without that divisor every
+  modern phone reports 1080-plus pixels on its short side and classifies as
+  a desktop.
+- **`HBoxContainer` refuses to be flipped.** `BoxContainer.vertical` is
+  settable, but `HBoxContainer` and `VBoxContainer` exist precisely to lock
+  the orientation and push an error when you assign it. A row that has to
+  become a column must be a plain `BoxContainer`.
 
 ### Phase 5 — Menu templates
 - [ ] `main_menu/`, `pause_menu/`, and `settings_menu/` under

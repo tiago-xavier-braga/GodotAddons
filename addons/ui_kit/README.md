@@ -5,8 +5,8 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** in progress (Phases 1-3 of 6 done — theming, input switching,
-> components). See the
+> **Status:** in progress (Phases 1-4 of 6 done — theming, input switching,
+> components, responsive layout). See the
 > [roadmap](../../docs/ui_kit/roadmap.md) for the phased plan and the
 > [API sketch](../../docs/ui_kit/api_design.md) for the intended public
 > surface.
@@ -95,6 +95,33 @@ resource to show no prompt for that device.
 (`PRIMARY`/`SECONDARY`/`ICON`) instead of a free-text string, and holds itself
 to `UIMetrics.MIN_TOUCH_TARGET`. Use it where a typo would be expensive; a
 plain `Button` with `theme_type_variation` set is equally supported.
+
+## Responsive layout
+
+`UIBreakpoints` reports one of three size classes and rearranges nothing
+itself:
+
+```gdscript
+UIBreakpoints.breakpoint_changed.connect(_on_breakpoint_changed)
+
+func _on_breakpoint_changed(size_class: StringName) -> void:
+    # A plain BoxContainer, not an HBoxContainer — the H/V subclasses exist to
+    # lock the orientation and refuse to be flipped.
+    row.vertical = size_class == UIBreakpoint.MOBILE_PORTRAIT
+```
+
+Reach for `HFlowContainer` before reaching for a breakpoint at all: it wraps
+on its own and needs no signal. The breakpoint is for the case no container
+covers, like a row that has to become a column.
+
+The threshold lives in `Project Settings > ui_kit > breakpoints >
+desktop_min_short_side` (600 by default): below that many
+density-independent pixels on the *shorter* side, the screen is mobile, and
+its orientation picks which of the two mobile classes applies. Sizes are
+divided by `DisplayServer.screen_get_scale()`, which reports the real factor
+on Android, iOS, macOS, Wayland and the web. X11 and Windows report `1.0` —
+right at 100% desktop scaling, wrong above it, and
+`UIBreakpoints.set_screen_scale_override()` is there for that case.
 
 ## Name prefix
 

@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 UIInput="*res://addons/ui_kit/input/ui_input.gd"
+UIBreakpoints="*res://addons/ui_kit/responsive/ui_breakpoints.gd"
 
 [display]
 

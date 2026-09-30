@@ -30,6 +30,14 @@ func check_equal(actual: Variant, expected: Variant, description: String) -> voi
 		failures.append("%s — expected %s, got %s" % [description, expected, actual])
 
 
+## For values that travel through a [Vector2] or any other 32-bit float, where
+## an exact comparison against a GDScript float would fail on the last digit.
+func check_approx(actual: float, expected: float, description: String) -> void:
+	checks += 1
+	if not is_equal_approx(actual, expected):
+		failures.append("%s — expected ~%f, got %f" % [description, expected, actual])
+
+
 ## Waits one full frame, so an event pushed through [method Input.parse_input_event]
 ## has been dispatched before the next assertion.
 func next_frame() -> void:
