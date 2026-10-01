@@ -213,7 +213,7 @@ cost is that opening one on its own in the editor shows it unstyled.
       not a path — so grepping `project.godot` for the script path finds
       nothing, and moving the addon folder does not break the autoload.
 - [ ] **Done when:** the addon works standalone on all three targets above.
-      Everything that can be checked on a desktop is checked, by 158 headless
+      Everything that can be checked on a desktop is checked, by 161 headless
       assertions plus the clean-install script; the three exports are what
       remains.
 

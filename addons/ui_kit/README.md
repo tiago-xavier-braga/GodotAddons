@@ -5,7 +5,7 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** feature-complete and covered by 158 headless checks. What is
+> **Status:** feature-complete and covered by 161 headless checks. What is
 > left is device verification: the web, mobile and Windows exports in Phase 6
 > of the
 > [roadmap](https://github.com/tiago-xavier-braga/GodotAddons/blob/main/docs/ui_kit/roadmap.md) for the phased plan

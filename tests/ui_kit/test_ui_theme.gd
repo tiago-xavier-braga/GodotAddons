@@ -11,6 +11,7 @@ func run() -> void:
 	_test_variations_exist()
 	_test_editing_a_token_rebuilds()
 	_test_swapping_the_palette_rebuilds()
+	_test_severity_ramp_is_ordered()
 	_test_apply_is_idempotent()
 	_test_apply_survives_missing_tokens()
 	await _test_controls_follow_the_theme()
@@ -101,6 +102,24 @@ func _test_swapping_the_palette_rebuilds() -> void:
 		(theme.get_stylebox(&"normal", UIVariants.PRIMARY_BUTTON) as StyleBoxFlat).bg_color,
 		Color.LIME_GREEN,
 		"a palette that was swapped out no longer rebuilds the theme"
+	)
+
+
+## The ramp's order is the point of it — a caller mapping a level onto a colour
+## is trusting info/warning/error/critical to stay in that sequence.
+func _test_severity_ramp_is_ordered() -> void:
+	var palette := UIPalette.new()
+	var ramp := palette.severity_ramp()
+	check_equal(ramp.size(), 4, "the ramp has four steps")
+	check_equal(
+		ramp,
+		PackedColorArray([palette.info, palette.warning, palette.error, palette.critical]),
+		"the ramp runs info, warning, error, critical"
+	)
+
+	palette.error = Color.MAGENTA
+	check_equal(
+		palette.severity_ramp()[2], Color.MAGENTA, "the ramp reads the tokens, not a snapshot"
 	)
 
 

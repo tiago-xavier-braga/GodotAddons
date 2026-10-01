@@ -6,6 +6,10 @@ extends RefCounted
 ## They live here, and not inside [UIThemeBuilder], because a template that
 ## sets [member Control.custom_minimum_size] by hand has to agree with the
 ## padding the theme draws — two copies of "44" would drift apart.
+##
+## Separations between nodes are not here: a [code].tscn[/code] cannot
+## reference a GDScript constant, so the scenes set those themselves and a
+## constant for them would only ever be a second, unread copy.
 
 ## Corner rounding applied to every filled style box.
 const CORNER_RADIUS := 6
@@ -25,12 +29,6 @@ const PANEL_PADDING := 16
 
 ## Gap between an icon and its label, and between check box and label.
 const ICON_SEPARATION := 8
-
-## Gap between stacked controls in the templates.
-const CONTENT_SEPARATION := 12
-
-## Gap between major sections in the templates.
-const SECTION_SEPARATION := 24
 
 ## Smallest side of anything a finger has to hit. 44 px is the figure both
 ## Apple's and Google's guidelines land on.
