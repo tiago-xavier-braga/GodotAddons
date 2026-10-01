@@ -5,11 +5,12 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** in progress (Phases 1-5 of 6 done — theming, input switching,
-> components, responsive layout, menu templates). See the
-> [roadmap](../../docs/ui_kit/roadmap.md) for the phased plan and the
-> [API sketch](../../docs/ui_kit/api_design.md) for the intended public
-> surface.
+> **Status:** feature-complete and covered by 158 headless checks. What is
+> left is device verification: the web, mobile and Windows exports in Phase 6
+> of the
+> [roadmap](https://github.com/tiago-xavier-braga/GodotAddons/blob/main/docs/ui_kit/roadmap.md) for the phased plan
+> and the [API sketch](https://github.com/tiago-xavier-braga/GodotAddons/blob/main/docs/ui_kit/api_design.md) for the
+> intended public surface.
 
 ## Why
 
@@ -29,6 +30,24 @@ project rebuilds the same four things:
 ## Requirements
 
 - Godot `4.7`
+
+## Safe areas
+
+Each template's outer container is a `UISafeArea`, so content stays clear of
+camera cut-outs, rounded corners and gesture bars without you thinking about
+it. On a screen with nothing in the way it is an ordinary `MarginContainer`
+using its `minimum_margin`. Use it in your own screens the same way.
+
+## Fonts and missing glyphs
+
+The kit bundles Noto Sans, because a web export has no system font to fall
+back on — a character the font lacks is a visible box, not a substitution. For
+scripts Noto Sans does not cover, add a font to `font_fallbacks` on your
+`UITypography`: it applies to every text item in the theme at once, including
+fonts of your own that replace the bundled ones.
+
+Noto Sans CJK is tens of megabytes, which is why it is not bundled for
+everyone.
 
 ## Install
 
@@ -173,4 +192,4 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-[MIT](../../LICENSE)
+[MIT](LICENSE)

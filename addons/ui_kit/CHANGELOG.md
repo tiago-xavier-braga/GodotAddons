@@ -11,7 +11,7 @@ and this addon uses [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Planning: roadmap, API sketch, and default token palette
-  (see [`docs/ui_kit/`](../../docs/ui_kit/)).
+  (see [`docs/ui_kit/`](https://github.com/tiago-xavier-braga/GodotAddons/tree/main/docs/ui_kit)).
 - Empty `EditorPlugin` stub, so the addon can be enabled under
   `Project Settings > Plugins`.
 - `UIPalette` and `UITypography`: the color, font and text-size tokens the
@@ -53,3 +53,11 @@ and this addon uses [Semantic Versioning](https://semver.org/).
   `PROCESS_MODE_ALWAYS` and nothing else.
 - `UITheme.find_in_ancestors()`, for finding the inherited theme when what you
   need is the tokens rather than a finished style box.
+- `UISafeArea`: a `MarginContainer` that keeps content clear of notches,
+  rounded corners and gesture bars, used as the outer container in all three
+  templates. Falls back to `minimum_margin` where there is nothing in the way.
+- `UITypography.font_fallbacks`, applied to every text item in the theme at
+  once, for script coverage the addon cannot bundle. The two bundled faces are
+  now `FontVariation`s, with bold falling through to regular.
+- The addon carries its own `LICENSE`, and its documents no longer link outside
+  the folder — so a copied `addons/ui_kit/` is complete on its own.

@@ -181,18 +181,41 @@ what makes them templates rather than a second skin to keep in sync. The
 cost is that opening one on its own in the editor shows it unstyled.
 
 ### Phase 6 — Cross-platform polish
-- [ ] Set `FontVariation.fallbacks` on the bundled fonts and check it on a
-      web export.
-- [ ] Apply `DisplayServer.get_display_safe_area()` as margin on the
-      templates.
+- [x] Set `FontVariation.fallbacks` on the bundled fonts. `fonts/ui_sans.tres`
+      and `fonts/ui_sans_bold.tres` wrap the two faces, with the bold one
+      falling through to the regular — a replacement display font missing
+      digits or punctuation still renders. Coverage the kit cannot ship
+      (Noto Sans CJK is tens of megabytes) goes in
+      `UITypography.font_fallbacks`, so it is configured in the consumer's
+      own resource and applies to their fonts as well as the bundled ones.
+      *Still to check on a web export.*
+- [x] Apply `DisplayServer.get_display_safe_area()` as margin on the
+      templates, through `UISafeArea`. Two details the plan did not have:
+      the safe area is a *rect* and margins are *insets*, so it has to be
+      inverted against the screen size; and it is measured in screen pixels
+      while a margin constant is in canvas units, which a `canvas_items`
+      stretch mode makes different sizes.
 - [ ] Export and check by hand on web, one mobile target, and
       Windows/Steam. Input switching and breakpoints must work on all
-      three.
-- [ ] A few tests in `tests/ui_kit/` for `UIInput` edge cases (gamepad unplugged
-      mid-game, two gamepads).
-- [ ] Install on a clean project: copy `addons/ui_kit/`, enable the plugin,
-      confirm both autoloads appear with no manual setup.
+      three. **Not done — needs export templates and real devices.** The
+      three things that can only be confirmed there: the bundled font
+      actually reaching a web build, `screen_get_scale()` reporting a real
+      factor on Android or iOS (without it a phone classifies as a desktop),
+      and the safe-area margins against a real notch.
+- [x] A few tests in `tests/ui_kit/` for `UIInput` edge cases (gamepad unplugged
+      mid-game, two gamepads). Both are in `test_ui_input.gd`; see
+      [`testing.md`](testing.md) for the whole suite.
+- [x] Install on a clean project: copy `addons/ui_kit/`, enable the plugin,
+      confirm both autoloads appear with no manual setup. Automated as
+      `tests/ui_kit/clean_install_check.sh`, which scaffolds a throwaway
+      project and ticks the checkbox for real. Worth knowing:
+      `add_autoload_singleton()` persists a `uid://` reference in Godot 4.7,
+      not a path — so grepping `project.godot` for the script path finds
+      nothing, and moving the addon folder does not break the autoload.
 - [ ] **Done when:** the addon works standalone on all three targets above.
+      Everything that can be checked on a desktop is checked, by 158 headless
+      assertions plus the clean-install script; the three exports are what
+      remains.
 
 ## Questions To Check Yourself
 

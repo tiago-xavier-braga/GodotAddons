@@ -14,6 +14,8 @@ const TESTS: PackedStringArray = [
 	"res://tests/ui_kit/test_ui_components.gd",
 	"res://tests/ui_kit/test_ui_breakpoints.gd",
 	"res://tests/ui_kit/test_ui_templates.gd",
+	"res://tests/ui_kit/test_ui_safe_area.gd",
+	"res://tests/ui_kit/test_addon_is_self_contained.gd",
 ]
 
 
@@ -39,8 +41,17 @@ func _run_all() -> void:
 		total_checks += test.checks
 		for failure: String in test.failures:
 			all_failures.append("%s: %s" % [test.name, failure])
+
+		# A test body that fails to load a scene, or errors out mid-coroutine,
+		# comes back here having asserted nothing — and would otherwise be
+		# reported as a pass.
+		if test.checks == 0:
+			all_failures.append("%s: ran no checks at all" % test.name)
+
 		print("%s  %s (%d checks)" % [
-			"FAIL" if not test.failures.is_empty() else "ok  ", test.name, test.checks
+			"FAIL" if not test.failures.is_empty() or test.checks == 0 else "ok  ",
+			test.name,
+			test.checks,
 		])
 		test.queue_free()
 

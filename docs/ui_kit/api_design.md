@@ -152,3 +152,31 @@ addons/ui_kit/templates/settings_menu/settings_menu.tscn
 - How a component decides which prompt glyph set to show per gamepad
   brand (Xbox/PlayStation/Switch) — out of scope for Phase 2, but the
   `InputDevice` enum shape should leave room for it later.
+
+## What shipped differently
+
+This file is the Phase 0 sketch and is left as written, so the guesses stay
+visible. Four of them did not survive contact with the engine — the code is
+the reference now, and `roadmap.md` records why each changed.
+
+- **`UIInput` is the autoload; `UIInputDevice` is the type.** GDScript refuses
+  a `class_name` that matches an autoload name, and a script without a
+  `class_name` cannot be used as a static type. So the enum lives in its own
+  class: `UIInputDevice.Kind`, not `UIInput.InputDevice`.
+- **`breakpoint_changed(size_class:)`, not `(breakpoint:)`.** `breakpoint` is a
+  GDScript keyword. The names themselves are constants on `UIBreakpoint`, and
+  the threshold is measured against the *window* in density-independent pixels
+  rather than the viewport — which cannot work, for the reason the roadmap
+  gives.
+- **`UIButton.variation`, not `variant`.** `Variant` is a built-in type name.
+  The enum is `UIButton.Variation`, and the script's remaining job turned out
+  to be the minimum touch target, which a `Theme` cannot express.
+- **Variation names all carry the `UI` prefix** — `UIPrimaryButton`,
+  `UISecondaryButton`, `UIIconButton`, `UIPanel`, `UIHeading`, `UIBody`,
+  `UICaption`, collected in `UIVariants`. A `Theme` merged into a project's own
+  shares that namespace, so they are public names like any other.
+
+Two things the sketch got right and are worth noting as settled: most
+components need no script at all, and `UIFocusPrompt` as one overlay rather
+than per-component logic is what makes that possible — including for a
+project's own controls, which the kit has never seen.

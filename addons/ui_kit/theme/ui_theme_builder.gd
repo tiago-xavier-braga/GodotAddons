@@ -22,18 +22,25 @@ static func apply(theme: Theme, palette: UIPalette, typography: UITypography) ->
 
 	theme.clear()
 
-	_apply_defaults(theme, palette, typography)
-	_apply_buttons(theme, palette, typography)
-	_apply_check_box(theme, palette, typography)
+	# Resolved once: UITypography wraps a font in a fresh FontVariation every
+	# time fallbacks are configured, and one per theme item would be waste.
+	var body_font: Font = typography.default_font()
+	var heading_font: Font = typography.heading_font()
+
+	_apply_defaults(theme, palette, body_font, typography)
+	_apply_buttons(theme, palette, body_font, typography)
+	_apply_check_box(theme, palette, body_font, typography)
 	_apply_sliders(theme, palette)
 	_apply_panels(theme, palette)
-	_apply_labels(theme, palette, typography)
+	_apply_labels(theme, palette, body_font, heading_font, typography)
 	_apply_scroll_bars(theme, palette)
 
 
-static func _apply_defaults(theme: Theme, palette: UIPalette, typography: UITypography) -> void:
-	if typography.font_default != null:
-		theme.default_font = typography.font_default
+static func _apply_defaults(
+	theme: Theme, palette: UIPalette, body_font: Font, typography: UITypography
+) -> void:
+	if body_font != null:
+		theme.default_font = body_font
 	theme.default_font_size = typography.size_body
 	theme.default_base_scale = 1.0
 
@@ -42,14 +49,24 @@ static func _apply_defaults(theme: Theme, palette: UIPalette, typography: UITypo
 	theme.set_stylebox(&"panel", &"PanelContainer", _filled(palette.background, 0))
 
 
-static func _apply_buttons(theme: Theme, palette: UIPalette, typography: UITypography) -> void:
+static func _apply_buttons(
+	theme: Theme, palette: UIPalette, body_font: Font, typography: UITypography
+) -> void:
 	# Base Button: a plain, script-free Button already looks like part of the
 	# kit. The variations below only change emphasis.
-	_write_button_set(theme, &"Button", typography, palette.surface, palette.text_primary, palette)
+	_write_button_set(
+		theme, &"Button", body_font, typography, palette.surface, palette.text_primary, palette
+	)
 
 	theme.set_type_variation(UIVariants.PRIMARY_BUTTON, &"Button")
 	_write_button_set(
-		theme, UIVariants.PRIMARY_BUTTON, typography, palette.accent, palette.background, palette
+		theme,
+		UIVariants.PRIMARY_BUTTON,
+		body_font,
+		typography,
+		palette.accent,
+		palette.background,
+		palette
 	)
 
 	# Secondary: outline only, so it reads as the quieter of two choices.
@@ -57,6 +74,7 @@ static func _apply_buttons(theme: Theme, palette: UIPalette, typography: UITypog
 	_write_button_set(
 		theme,
 		UIVariants.SECONDARY_BUTTON,
+		body_font,
 		typography,
 		Color(palette.accent, 0.0),
 		palette.accent,
@@ -68,6 +86,7 @@ static func _apply_buttons(theme: Theme, palette: UIPalette, typography: UITypog
 	_write_button_set(
 		theme,
 		UIVariants.ICON_BUTTON,
+		body_font,
 		typography,
 		Color(palette.surface, 0.0),
 		palette.text_primary,
@@ -88,6 +107,7 @@ static func _apply_buttons(theme: Theme, palette: UIPalette, typography: UITypog
 static func _write_button_set(
 	theme: Theme,
 	type_name: StringName,
+	body_font: Font,
 	typography: UITypography,
 	background: Color,
 	foreground: Color,
@@ -123,8 +143,8 @@ static func _write_button_set(
 	theme.set_stylebox(&"focus", type_name, focus)
 
 	theme.set_font_size(&"font_size", type_name, typography.size_button)
-	if typography.font_default != null:
-		theme.set_font(&"font", type_name, typography.font_default)
+	if body_font != null:
+		theme.set_font(&"font", type_name, body_font)
 
 	theme.set_color(&"font_color", type_name, foreground)
 	theme.set_color(&"font_hover_color", type_name, _hovered(foreground))
@@ -144,7 +164,9 @@ static func _write_button_set(
 	theme.set_constant(&"outline_size", type_name, 0)
 
 
-static func _apply_check_box(theme: Theme, palette: UIPalette, typography: UITypography) -> void:
+static func _apply_check_box(
+	theme: Theme, palette: UIPalette, body_font: Font, typography: UITypography
+) -> void:
 	# A check box has no filled background of its own — the tick is the whole
 	# control — so every state box is empty except the focus ring.
 	for state: StringName in [&"normal", &"hover", &"pressed", &"hover_pressed", &"disabled"]:
@@ -164,8 +186,8 @@ static func _apply_check_box(theme: Theme, palette: UIPalette, typography: UITyp
 	theme.set_color(&"font_disabled_color", &"CheckBox", _dimmed(palette.text_primary))
 
 	theme.set_font_size(&"font_size", &"CheckBox", typography.size_button)
-	if typography.font_default != null:
-		theme.set_font(&"font", &"CheckBox", typography.font_default)
+	if body_font != null:
+		theme.set_font(&"font", &"CheckBox", body_font)
 	theme.set_constant(&"h_separation", &"CheckBox", UIMetrics.ICON_SEPARATION)
 
 
@@ -202,16 +224,21 @@ static func _apply_panels(theme: Theme, palette: UIPalette) -> void:
 	theme.set_stylebox(&"panel", UIVariants.PANEL, card)
 
 
-static func _apply_labels(theme: Theme, palette: UIPalette, typography: UITypography) -> void:
+static func _apply_labels(
+	theme: Theme,
+	palette: UIPalette,
+	body_font: Font,
+	heading_font: Font,
+	typography: UITypography
+) -> void:
 	theme.set_color(&"font_color", &"Label", palette.text_primary)
 	theme.set_font_size(&"font_size", &"Label", typography.size_body)
-	if typography.font_default != null:
-		theme.set_font(&"font", &"Label", typography.font_default)
+	if body_font != null:
+		theme.set_font(&"font", &"Label", body_font)
 
 	theme.set_type_variation(UIVariants.HEADING, &"Label")
 	theme.set_color(&"font_color", UIVariants.HEADING, palette.text_primary)
 	theme.set_font_size(&"font_size", UIVariants.HEADING, typography.size_heading)
-	var heading_font: Font = typography.heading_font()
 	if heading_font != null:
 		theme.set_font(&"font", UIVariants.HEADING, heading_font)
 
