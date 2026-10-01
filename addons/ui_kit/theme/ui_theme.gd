@@ -33,6 +33,27 @@ extends Theme
 		_rebuild()
 
 
+## The nearest [UITheme] at or above [param node], or [code]null[/code].
+##
+## Theme lookup in Godot walks up the tree, but there is no public getter for
+## the theme a [Control] has *resolved* — only for the one it sets itself. The
+## kit's templates deliberately set none, so that they inherit the game's, and
+## this is how they find it again when they need the tokens rather than a
+## finished style box.
+static func find_in_ancestors(node: Node) -> UITheme:
+	var current: Node = node
+	while current != null:
+		var candidate: Theme = null
+		if current is Control:
+			candidate = (current as Control).theme
+		elif current is Window:
+			candidate = (current as Window).theme
+		if candidate is UITheme:
+			return candidate as UITheme
+		current = current.get_parent()
+	return null
+
+
 ## Rebuilds from the current tokens. Called for you when either token resource
 ## changes; useful by hand only if you mutated one without emitting
 ## [signal Resource.changed].

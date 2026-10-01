@@ -157,17 +157,28 @@ Two things the plan had wrong, both found by running it:
   become a column must be a plain `BoxContainer`.
 
 ### Phase 5 — Menu templates
-- [ ] `main_menu/`, `pause_menu/`, and `settings_menu/` under
+- [x] `main_menu/`, `pause_menu/`, and `settings_menu/` under
       `addons/ui_kit/templates/`, built from the Phase 3 kit inside
       `Container`s. Override `focus_neighbor_*` only where the automatic
-      order is wrong.
-- [ ] Touch-friendly hit areas via `custom_minimum_size`.
-- [ ] `pause_menu`: `PROCESS_MODE_ALWAYS` + `get_tree().paused = true`.
+      order is wrong — which turned out to be nowhere. `tests/ui_kit/`
+      asserts the computed order instead of trusting it.
+- [x] Touch-friendly hit areas via `custom_minimum_size`, with a test that
+      walks all three templates and fails on any focusable control shorter
+      than `UIMetrics.MIN_TOUCH_TARGET`.
+- [x] `pause_menu`: `PROCESS_MODE_ALWAYS` + `get_tree().paused = true`.
       Nothing custom.
-- [ ] Put a palette picker in the settings menu, as a live demo of Phase 1.
-- [ ] **Done when:** `demo/ui_kit/showcase/` chains all three screens, navigable by
+- [x] Put a palette picker in the settings menu, as a live demo of Phase 1.
+      A row of buttons rather than an `OptionButton`: a popup is a second
+      surface to theme, costs an extra press on a pad, and hides the choices
+      until opened.
+- [x] **Done when:** `demo/ui_kit/showcase/` chains all three screens, navigable by
       keyboard, gamepad, and touch, with the active-device indicator
       visible.
+
+One decision worth writing down: the templates set no `theme` on their own
+roots. Theme lookup walks up the tree, so they inherit the game's — which is
+what makes them templates rather than a second skin to keep in sync. The
+cost is that opening one on its own in the editor shows it unstyled.
 
 ### Phase 6 — Cross-platform polish
 - [ ] Set `FontVariation.fallbacks` on the bundled fonts and check it on a

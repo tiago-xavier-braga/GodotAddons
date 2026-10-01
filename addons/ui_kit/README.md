@@ -5,8 +5,8 @@ templates (main menu, pause, settings), and automatic keyboard/gamepad/touch
 input switching — built to drop into new projects (web, mobile, Steam) without
 rebuilding UI from scratch every time.
 
-> **Status:** in progress (Phases 1-4 of 6 done — theming, input switching,
-> components, responsive layout). See the
+> **Status:** in progress (Phases 1-5 of 6 done — theming, input switching,
+> components, responsive layout, menu templates). See the
 > [roadmap](../../docs/ui_kit/roadmap.md) for the phased plan and the
 > [API sketch](../../docs/ui_kit/api_design.md) for the intended public
 > surface.
@@ -122,6 +122,43 @@ divided by `DisplayServer.screen_get_scale()`, which reports the real factor
 on Android, iOS, macOS, Wayland and the web. X11 and Windows report `1.0` —
 right at 100% desktop scaling, wrong above it, and
 `UIBreakpoints.set_screen_scale_override()` is there for that case.
+
+## Menu templates
+
+Three full-screen scenes under `templates/`. Instance one, connect its
+signals, and that is the integration:
+
+```gdscript
+main_menu.play_pressed.connect(_start_game)
+main_menu.settings_pressed.connect(_open_settings)
+
+pause_menu.resume_pressed.connect(_on_resumed)
+settings_menu.palette_changed.connect(_save_palette)
+```
+
+| Template           | Signals                                                                                      |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| `UIMainMenu`       | `play_pressed`, `settings_pressed`, `quit_pressed`                                            |
+| `UIPauseMenu`      | `resume_pressed`, `settings_pressed`, `quit_pressed` — plus `open()`/`close()`/`resume()`      |
+| `UISettingsMenu`   | `back_pressed`, `palette_changed`, `music_volume_changed`, `effects_volume_changed`, `fullscreen_toggled` |
+
+Two things to know:
+
+- **They set no `theme`.** Theme lookup walks up the tree, so a template picks
+  up whatever `UITheme` your root sets. That is what keeps them templates
+  instead of a second skin to maintain — but it also means opening one on its
+  own in the editor shows it unstyled, which is expected.
+- **They report; they do not act.** The settings screen does not touch your
+  audio buses or your window mode, because it cannot know how many buses you
+  have or whether you want exclusive or borderless fullscreen. The one
+  exception is the palette, since re-skinning is this kit's own job.
+
+`UIPauseMenu` pauses with `get_tree().paused` and stays responsive through
+`PROCESS_MODE_ALWAYS` — there is no pause system in the addon. Pressing
+Settings from it hides the menu but leaves the tree paused, so whatever you
+show next is paused too.
+
+`demo/ui_kit/showcase/` chains all three and is the dev harness's main scene.
 
 ## Name prefix
 

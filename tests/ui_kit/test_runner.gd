@@ -13,6 +13,7 @@ const TESTS: PackedStringArray = [
 	"res://tests/ui_kit/test_ui_theme.gd",
 	"res://tests/ui_kit/test_ui_components.gd",
 	"res://tests/ui_kit/test_ui_breakpoints.gd",
+	"res://tests/ui_kit/test_ui_templates.gd",
 ]
 
 

@@ -46,3 +46,10 @@ and this addon uses [Semantic Versioning](https://semver.org/).
   desktop.
 - `ui_kit/breakpoints/desktop_min_short_side` project setting, registered on
   enable; a value the project changed is left alone on disable.
+- `UIMainMenu`, `UIPauseMenu` and `UISettingsMenu` templates under
+  `templates/`. They set no theme of their own, so they inherit the game's;
+  they emit rather than act, except for the settings screen's palette picker,
+  which re-skins live. `UIPauseMenu` uses `SceneTree.paused` and
+  `PROCESS_MODE_ALWAYS` and nothing else.
+- `UITheme.find_in_ancestors()`, for finding the inherited theme when what you
+  need is the tokens rather than a finished style box.

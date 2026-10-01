@@ -1,0 +1,96 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Theme" path="res://addons/ui_kit/theme/default_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://demo/ui_kit/showcase/showcase.gd" id="2_script"]
+[ext_resource type="PackedScene" path="res://addons/ui_kit/templates/main_menu/main_menu.tscn" id="3_main_menu"]
+[ext_resource type="PackedScene" path="res://addons/ui_kit/templates/settings_menu/settings_menu.tscn" id="4_settings"]
+[ext_resource type="PackedScene" path="res://addons/ui_kit/templates/pause_menu/pause_menu.tscn" id="5_pause"]
+[ext_resource type="PackedScene" path="res://addons/ui_kit/components/focus_prompt/ui_focus_prompt.tscn" id="6_focus_prompt"]
+[ext_resource type="Resource" path="res://addons/ui_kit/theme/default_palette.tres" id="7_default"]
+[ext_resource type="Resource" path="res://demo/ui_kit/theming/daylight_palette.tres" id="8_daylight"]
+[ext_resource type="Resource" path="res://demo/ui_kit/theming/ember_palette.tres" id="9_ember"]
+
+[node name="Showcase" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+palettes = Array[Resource]([ExtResource("7_default"), ExtResource("8_daylight"), ExtResource("9_ember")])
+
+[node name="MainMenu" parent="." instance=ExtResource("3_main_menu")]
+unique_name_in_owner = true
+title = "UI Kit Showcase"
+
+[node name="Gameplay" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="CenterContainer" parent="Gameplay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Layout" type="VBoxContainer" parent="Gameplay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Gameplay/Center/Layout"]
+layout_mode = 2
+theme_type_variation = &"UIHeading"
+text = "Pretend this is the game"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Gameplay/Center/Layout"]
+layout_mode = 2
+theme_type_variation = &"UICaption"
+text = "Escape, or B on a pad, to pause."
+horizontal_alignment = 1
+
+[node name="SettingsMenu" parent="." instance=ExtResource("4_settings")]
+unique_name_in_owner = true
+visible = false
+palettes = Array[Resource]([ExtResource("7_default"), ExtResource("8_daylight"), ExtResource("9_ember")])
+
+[node name="PauseMenu" parent="." instance=ExtResource("5_pause")]
+unique_name_in_owner = true
+visible = false
+
+[node name="Hud" type="CanvasLayer" parent="."]
+layer = 50
+
+[node name="Readouts" type="VBoxContainer" parent="Hud"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -64.0
+offset_right = 480.0
+offset_bottom = -16.0
+grow_vertical = 0
+theme = ExtResource("1_theme")
+theme_override_constants/separation = 2
+
+[node name="Status" type="Label" parent="Hud/Readouts"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UIBody"
+
+[node name="LastChange" type="Label" parent="Hud/Readouts"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UICaption"
+
+[node name="UIFocusPrompt" parent="." instance=ExtResource("6_focus_prompt")]

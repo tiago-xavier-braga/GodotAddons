@@ -1,0 +1,126 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://addons/ui_kit/templates/settings_menu/settings_menu.gd" id="1_settings_menu"]
+[ext_resource type="Script" path="res://addons/ui_kit/components/ui_button.gd" id="2_ui_button"]
+
+[node name="UISettingsMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_settings_menu")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SafeArea" type="MarginContainer" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Scroll" type="ScrollContainer" parent="Background/SafeArea"]
+layout_mode = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="Layout" type="VBoxContainer" parent="Background/SafeArea/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Background/SafeArea/Scroll/Layout"]
+layout_mode = 2
+theme_type_variation = &"UIHeading"
+text = "Settings"
+
+[node name="PaletteSection" type="VBoxContainer" parent="Background/SafeArea/Scroll/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PaletteLabel" type="Label" parent="Background/SafeArea/Scroll/Layout/PaletteSection"]
+layout_mode = 2
+theme_type_variation = &"UIBody"
+text = "Colour scheme"
+
+[node name="PaletteHint" type="Label" parent="Background/SafeArea/Scroll/Layout/PaletteSection"]
+layout_mode = 2
+theme_type_variation = &"UICaption"
+text = "Applied straight away — every screen behind this one re-skins with it."
+autowrap_mode = 3
+
+[node name="PaletteRow" type="HFlowContainer" parent="Background/SafeArea/Scroll/Layout/PaletteSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+
+[node name="AudioSection" type="VBoxContainer" parent="Background/SafeArea/Scroll/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AudioLabel" type="Label" parent="Background/SafeArea/Scroll/Layout/AudioSection"]
+layout_mode = 2
+theme_type_variation = &"UIBody"
+text = "Volume"
+
+[node name="MusicLabel" type="Label" parent="Background/SafeArea/Scroll/Layout/AudioSection"]
+layout_mode = 2
+theme_type_variation = &"UICaption"
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="Background/SafeArea/Scroll/Layout/AudioSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
+value = 80.0
+
+[node name="EffectsLabel" type="Label" parent="Background/SafeArea/Scroll/Layout/AudioSection"]
+layout_mode = 2
+theme_type_variation = &"UICaption"
+text = "Effects"
+
+[node name="EffectsSlider" type="HSlider" parent="Background/SafeArea/Scroll/Layout/AudioSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
+value = 80.0
+
+[node name="DisplaySection" type="VBoxContainer" parent="Background/SafeArea/Scroll/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DisplayLabel" type="Label" parent="Background/SafeArea/Scroll/Layout/DisplaySection"]
+layout_mode = 2
+theme_type_variation = &"UIBody"
+text = "Display"
+
+[node name="FullscreenCheck" type="CheckBox" parent="Background/SafeArea/Scroll/Layout/DisplaySection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="BackButton" type="Button" parent="Background/SafeArea/Scroll/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Back"
+script = ExtResource("2_ui_button")
+variation = 1
