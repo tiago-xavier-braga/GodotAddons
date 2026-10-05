@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://addons/ui_kit/components/focus_prompt/ui_focus_prompt.gd" id="1_prompt"]
-[ext_resource type="Resource" path="res://addons/ui_kit/components/focus_prompt/default_prompts.tres" id="2_prompts"]
-
-[node name="UIFocusPrompt" type="CanvasLayer"]
-layer = 100
-script = ExtResource("1_prompt")
-prompts = ExtResource("2_prompts")

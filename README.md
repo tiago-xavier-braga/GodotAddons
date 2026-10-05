@@ -12,7 +12,7 @@ deliverable, self-contained and copyable on its own.
 
 | Addon | What it does | Status |
 | ----- | ------------ | ------ |
-| [`ui_kit`](addons/ui_kit/) | Themed UI components, ready-made menu templates, and automatic keyboard/gamepad/touch switching | Planning ([roadmap](docs/ui_kit/roadmap.md)) |
+| `ui_kit` | Themed UI components, ready-made menu templates, and automatic keyboard/gamepad/touch switching | Planning ([roadmap](docs/ui_kit/roadmap.md)) |
 
 ## Requirements
 

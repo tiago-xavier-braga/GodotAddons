@@ -1,7 +1,0 @@
-[gd_resource type="Resource" script_class="UIPalette" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://addons/ui_kit/theme/ui_palette.gd" id="1_palette"]
-
-[resource]
-script = ExtResource("1_palette")
-resource_name = "UI Kit Default Palette"

@@ -12,22 +12,12 @@ config_version=5
 
 config/name="Godot Addons"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-run/main_scene="res://demo/ui_kit/showcase/showcase.tscn"
 config/icon="res://icon.svg"
-
-[autoload]
-
-UIInput="*res://addons/ui_kit/input/ui_input.gd"
-UIBreakpoints="*res://addons/ui_kit/responsive/ui_breakpoints.gd"
 
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/ui_kit/plugin.cfg")
 
 [physics]
 
