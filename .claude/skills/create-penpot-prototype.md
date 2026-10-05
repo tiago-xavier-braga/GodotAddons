@@ -1,6 +1,6 @@
 ---
 name: create-penpot-prototype
-description: Creates a Penpot prototype for a component or screen of the ui_kit addon, using its design tokens (palette/typography) as visual reference.
+description: Creates a Penpot prototype for a component or screen of the ui_kit addon, using the Penpot file's design tokens (palette/typography) as visual reference.
 ---
 
 # Create Penpot Prototype
@@ -55,9 +55,8 @@ its implementation in Godot.
 
 ## Notes
 
-- Do not invent color/typography tokens that don't exist in the addon —
-  use the ones already defined in `UIPalette`/`UITypography` (resources in
-  `addons/ui_kit/`, documented in `docs/ui_kit/design.md`).
+- Do not invent color/typography tokens — reuse the ones already defined in
+  the Penpot file. If none exist yet, ask the user before creating them.
 - Keep the prototype simple: one board per component/screen, without
   interaction details that Penpot doesn't represent well (that's left for
   the implementation in Godot).
