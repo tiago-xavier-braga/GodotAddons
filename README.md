@@ -13,6 +13,7 @@ deliverable, self-contained and copyable on its own.
 | Addon | What it does | Status |
 | ----- | ------------ | ------ |
 | `ui_kit` | Themed UI components, ready-made menu templates, and automatic keyboard/gamepad/touch switching | Planning ([roadmap](docs/ui_kit/roadmap.md)) |
+| `save_kit` | One save system for web and desktop: localStorage on the web, a `user://` file everywhere else | In use in He Who Loses Wins ([roadmap](docs/save_kit/roadmap.md)) |
 
 ## Requirements
 
@@ -40,8 +41,8 @@ others loaded.
 **One name prefix per addon.** GDScript has no namespaces: `class_name` and
 autoload names are global to the whole project, including the consumer's game.
 Two addons declaring the same `class_name` will not compile together. `ui_kit`
-owns the `UI` prefix (`UIPalette`, `UIInput`, ...); every new addon picks its
-own and keeps to it.
+owns the `UI` prefix (`UIPalette`, `UIInput`, ...) and `save_kit` owns `Save`
+(`SaveKit`, `SaveStorage`, ...); every new addon picks its own and keeps to it.
 
 **Keep addons self-contained.** Everything loads at once here, so it is easy
 to reach across addons without noticing — and the consumer who copies only one
